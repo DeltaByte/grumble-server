@@ -8,14 +8,14 @@ import (
 	"github.com/jinzhu/configor"
 )
 
-type config struct {
+type Config struct {
 	Port uint `default:"8080"`
 	Host string `default:"0.0.0.0"`
 }
 
 
-func LoadConfig() *config {
-	config := &config{}
+func LoadConfig() *Config {
+	config := &Config{}
 
 	// parse env vars and load config file
 	configPath := flag.String("config-file", "config.json", "Configuration file location")
