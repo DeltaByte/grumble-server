@@ -7,7 +7,8 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"gitlab.com/grumblechat/server/controllers"
+
+	channelsController "gitlab.com/grumblechat/server/controllers/channels"
 )
 
 type CustomValidator struct {
@@ -35,7 +36,7 @@ func main() {
 	}
 
 	// bind controller routes
-	controllers.BindChannelRoutes(app.Group("/channels"))
+	channelsController.BindRoutes(app.Group("/channels"))
 
 	// start server
 	app.Start(fmt.Sprintf("%s:%d", config.Host, config.Port))
