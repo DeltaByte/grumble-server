@@ -3,6 +3,7 @@ module gitlab.com/grumblechat/server
 go 1.16
 
 require (
+	github.com/getsentry/sentry-go v0.10.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/jinzhu/configor v1.2.1

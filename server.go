@@ -2,13 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/getsentry/sentry-go"
+	sentryEcho "github.com/getsentry/sentry-go/echo"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	channelsController "gitlab.com/grumblechat/server/controllers/channels"
+	"gitlab.com/grumblechat/server/internal/config"
 )
 
 type CustomValidator struct {
@@ -24,11 +28,27 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 
 func main() {
 	// load config
-	config := LoadConfig()
+	config := config.Load()
 
-	// init framework
+	// initialize Sentry client
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: config.SentryDSN,
+	})
+	if err != nil {
+		log.Fatalf("Sentry initialization failed: %v\n", err)
+	}
+
+	// init framework and register global middleware
 	app := echo.New()
+	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
+
+	// report errors to sentry
+	if (config.EnableSentry) {
+		app.Use(sentryEcho.New(sentryEcho.Options{
+			Repanic: true,
+		}))
+	}
 
 	// setup validation
 	app.Validator = &CustomValidator{

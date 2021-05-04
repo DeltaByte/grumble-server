@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"flag"
@@ -8,14 +8,23 @@ import (
 	"github.com/jinzhu/configor"
 )
 
+const (
+	sentryDSN = "https://cf2ab432ed6349babe02271dba283cb4@o611189.ingest.sentry.io/5748077"
+)
+
 type Config struct {
-	Port uint `default:"8080"`
-	Host string `default:"0.0.0.0"`
+	Port         uint   `default:"8080"`
+	Host         string `default:"0.0.0.0"`
+	EnableSentry bool   `default:"true"`
+	SentryDSN    string `default:""`
 }
 
-
-func LoadConfig() *Config {
+func Load() *Config {
 	config := &Config{}
+
+	// load constants, TBH this is mostly so that longer values can be moved out
+	// of the main struct so that it is slightly easier to read.
+	config.SentryDSN = sentryDSN
 
 	// parse env vars and load config file
 	configPath := flag.String("config-file", "config.json", "Configuration file location")
@@ -27,7 +36,7 @@ func LoadConfig() *Config {
 		ErrorOnUnmatchedKeys: true,
 	}).Load(config, *configPath)
 
-	// log error and kill server in config is invalid
+	// log error and kill server if config is invalid
 	if err != nil {
 		fmt.Printf("Failed to load config from %s: %s", *configPath, err)
 		os.Exit(1)
