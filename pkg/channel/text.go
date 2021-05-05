@@ -7,7 +7,7 @@ type TextChannel struct {
 	Type  string   `json:"type" validate:"oneof:text voice,required"`
 	Name  string   `json:"name" validate:"max=100,required"`
 	Topic string   `json:"topic" validate:"max=1024"`
-	NSFW  bool     `json:"nsfw"`
+	NSFW  bool     `json:"nsfw" default:"false"`
 }
 
 func CreateText () *TextChannel {
