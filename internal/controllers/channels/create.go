@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"gitlab.com/grumblechat/server/internal/channel"
+	"gitlab.com/grumblechat/server/pkg/channel"
 )
 
 type typeEnvelope struct {

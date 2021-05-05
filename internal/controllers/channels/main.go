@@ -14,6 +14,5 @@ func BindRoutes(routeGroup *echo.Group) {
 var knownTypes = [2]string {"text", "voice"}
 
 func listHandler(ctx echo.Context) error {
-	return errors.New("Not implemented")
+	return errors.New("not implemented")
 }
-

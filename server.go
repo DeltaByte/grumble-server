@@ -11,8 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	channelsController "gitlab.com/grumblechat/server/controllers/channels"
 	"gitlab.com/grumblechat/server/internal/config"
+	channelsController "gitlab.com/grumblechat/server/internal/controllers/channels"
 )
 
 type CustomValidator struct {
@@ -20,10 +20,10 @@ type CustomValidator struct {
 }
 
 func (cv *CustomValidator) Validate(i interface{}) error {
-  if err := cv.validator.Struct(i); err != nil {
-    return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-  }
-  return nil
+	if err := cv.validator.Struct(i); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return nil
 }
 
 func main() {
@@ -38,13 +38,16 @@ func main() {
 		log.Fatalf("Sentry initialization failed: %v\n", err)
 	}
 
-	// init framework and register global middleware
+	// init framework
 	app := echo.New()
+	app.Pre(middleware.AddTrailingSlash())
+
+	// register global middleware
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
 
 	// report errors to sentry
-	if (config.EnableSentry) {
+	if config.EnableSentry {
 		app.Use(sentryEcho.New(sentryEcho.Options{
 			Repanic: true,
 		}))
