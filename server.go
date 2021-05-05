@@ -3,28 +3,16 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/getsentry/sentry-go"
 	sentryEcho "github.com/getsentry/sentry-go/echo"
-	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	"gitlab.com/grumblechat/server/internal/config"
+	"gitlab.com/grumblechat/server/internal/validation"
 	channelsController "gitlab.com/grumblechat/server/internal/controllers/channels"
 )
-
-type CustomValidator struct {
-	validator *validator.Validate
-}
-
-func (cv *CustomValidator) Validate(i interface{}) error {
-	if err := cv.validator.Struct(i); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-	return nil
-}
 
 func main() {
 	// load config
@@ -40,6 +28,7 @@ func main() {
 
 	// init framework
 	app := echo.New()
+	app.Validator = validation.Echo()
 	app.Pre(middleware.AddTrailingSlash())
 
 	// register global middleware
@@ -51,11 +40,6 @@ func main() {
 		app.Use(sentryEcho.New(sentryEcho.Options{
 			Repanic: true,
 		}))
-	}
-
-	// setup validation
-	app.Validator = &CustomValidator{
-		validator: validator.New(),
 	}
 
 	// bind controller routes
