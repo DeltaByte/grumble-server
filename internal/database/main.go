@@ -13,8 +13,8 @@ var (
 func Init(path string) {
 	// channels
 	channelsDB, err := badger.Open(badger.DefaultOptions(fmt.Sprintf("%s/channels.db", path)))
-  if err != nil { panic("Failed to open database: channels") }
-  defer channelsDB.Close()
+	if err != nil { panic("Failed to open database: channels") }
+	defer channelsDB.Close()
 }
 
 func DBManager(name string) *badger.DB {

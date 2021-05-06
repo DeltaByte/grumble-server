@@ -27,9 +27,9 @@ func getTypeFromBody(ctx echo.Context) (string, error) {
 
 	// unmarshal JSON from body
 	envelope := new(typeEnvelope)
-  if err = json.Unmarshal(bodyBytes, envelope); err != nil {
+	if err = json.Unmarshal(bodyBytes, envelope); err != nil {
 		return "", echo.NewHTTPError(http.StatusInternalServerError, err.Error()) 
-  }
+	}
 
 	// validate type
 	if err = ctx.Validate(envelope); err != nil {
@@ -52,16 +52,16 @@ func createHandler(ctx echo.Context) error {
 	if channelType == "voice" {
 		newChannel = channel.NewVoice()
 		if err := ctx.Bind(newChannel); err != nil {
-      return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-    }
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
 	}
 
 	// text channel
 	if channelType == "text" {
 		newChannel = channel.NewText()
 		if err := ctx.Bind(newChannel); err != nil {
-      return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-    }
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
 	}
 
 	// validate channel
