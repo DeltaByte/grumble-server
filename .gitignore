@@ -1,3 +1,6 @@
+storage/**
+!storage/**/.gitkeep
+
 # Created by https://www.toptal.com/developers/gitignore/api/go,code
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,code
 
