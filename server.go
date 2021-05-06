@@ -10,8 +10,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"gitlab.com/grumblechat/server/internal/config"
-	"gitlab.com/grumblechat/server/internal/validation"
 	channelsController "gitlab.com/grumblechat/server/internal/controllers/channels"
+	"gitlab.com/grumblechat/server/internal/database"
+	"gitlab.com/grumblechat/server/internal/validation"
 )
 
 func main() {
@@ -41,6 +42,9 @@ func main() {
 			Repanic: true,
 		}))
 	}
+
+	// load databases
+	database.Init(config.Storage.Database)
 
 	// bind controller routes
 	channelsController.BindRoutes(app.Group("/channels"))

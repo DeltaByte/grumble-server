@@ -1,42 +1,78 @@
 package channels
 
 import (
+	"bytes"
+	"io/ioutil"
 	"net/http"
+	"encoding/json"
 
 	"github.com/labstack/echo/v4"
+	"gitlab.com/grumblechat/server/internal/database"
 	"gitlab.com/grumblechat/server/pkg/channel"
 )
 
-type typeEnvelope struct {
-	Type string `json:"type" validation:"oneof:text voice, required"`
+func getTypeFromBody(ctx echo.Context) (string, error) {
+	type typeEnvelope struct {
+		Type string `json:"type" validate:"oneof:text voice,required"`
+	}
+
+	// get raw bytes from body
+	var (bodyBytes []byte; err error)
+	if bodyBytes, err = ioutil.ReadAll(ctx.Request().Body); err != nil {
+		return "", echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	// add body back into request
+	ctx.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	// unmarshal JSON from body
+	envelope := new(typeEnvelope)
+  if err = json.Unmarshal(bodyBytes, envelope); err != nil {
+		return "", echo.NewHTTPError(http.StatusInternalServerError, err.Error()) 
+  }
+
+	// validate type
+	if err = ctx.Validate(envelope); err != nil {
+		return "", echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// return type and no error
+	return envelope.Type, nil
 }
 
 func createHandler(ctx echo.Context) error {
-	envelope := &typeEnvelope{}
+	db := database.DBManager("channels")
+	var newChannel channel.Channel
 
-	// unmarshal channel type
-	if err := ctx.Bind(envelope); err != nil {
-		return ctx.JSON(http.StatusBadRequest, envelope)
+	// unmarshal raw body and write back to request
+	channelType, err := getTypeFromBody(ctx)
+	if err != nil { return err }
+
+	// voice channel
+	if channelType == "voice" {
+		newChannel = channel.NewVoice()
+		if err := ctx.Bind(newChannel); err != nil {
+      return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+    }
 	}
 
-	// create voice
-	if envelope.Type == "voice" {
-		voiceChan := channel.CreateVoice()
-		if err := ctx.Bind(voiceChan); err != nil {
-			return ctx.JSON(http.StatusBadRequest, voiceChan)
-		}
-		return ctx.JSON(http.StatusCreated, voiceChan)
+	// text channel
+	if channelType == "text" {
+		newChannel = channel.NewText()
+		if err := ctx.Bind(newChannel); err != nil {
+      return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+    }
 	}
 
-	// create text
-	if envelope.Type == "text" {
-		textChan := channel.CreateText()
-		if err := ctx.Bind(textChan); err != nil {
-			return ctx.JSON(http.StatusBadRequest, textChan)
-		}
-		return ctx.JSON(http.StatusCreated, textChan)
+	// validate channel
+	if err = ctx.Validate(newChannel); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	// handle unexpected type
-	return echo.NewHTTPError(http.StatusInternalServerError)
+	// persist channel
+	if err := newChannel.Save(db); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusCreated, newChannel)
 }

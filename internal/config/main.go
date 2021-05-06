@@ -12,15 +12,22 @@ const (
 	sentryDSN = "https://cf2ab432ed6349babe02271dba283cb4@o611189.ingest.sentry.io/5748077"
 )
 
-type Config struct {
+type coreConfig struct {
 	Port         uint   `default:"8080"`
 	Host         string `default:"0.0.0.0"`
 	EnableSentry bool   `default:"true"`
 	SentryDSN    string `default:""`
+	Storage      storageConfig
 }
 
-func Load() *Config {
-	config := &Config{}
+type storageConfig struct {
+	Database string `default:"./storage/database"`
+	Media    string `default:"./storage/media"`
+	Logs     string `default:"./storage/logs"`
+}
+
+func Load() *coreConfig {
+	config := &coreConfig{}
 
 	// load constants, TBH this is mostly so that longer values can be moved out
 	// of the main struct so that it is slightly easier to read.
