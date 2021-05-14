@@ -12,13 +12,14 @@ type VoiceChannel struct {
 	ID      ksuid.KSUID `json:"id"`
 	Type    string      `json:"type" validate:"oneof=text voice,required"`
 	Name    string      `json:"name" validate:"max=100,required"`
-	Bitrate uint8       `json:"bitrate"`
+	Bitrate uint8       `json:"bitrate" validate:"min=4,max=255"`
 }
 
 func NewVoice() *VoiceChannel {
 	return &VoiceChannel{
 		ID:   ksuid.New(),
 		Type: "voice",
+		Bitrate: 64,
 	}
 }
 
