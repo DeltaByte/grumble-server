@@ -13,16 +13,15 @@ func listHandler(db *bolt.DB) echo.HandlerFunc {
 		var channels []channel.Channel
 
 		err := db.View(func(tx *bolt.Tx) (error) {
-			// open bucket and create a cursor
 			dbb := tx.Bucket([]byte(channel.DBBucket))
-			cursor := dbb.Cursor()
 
 			// iterate over all channels, decode and add to array
-			for k, v := cursor.First(); k != nil; k, v = cursor.Next() {
+			dbb.ForEach(func(k, v []byte) error {
 				decoded, err := channel.Decode(v)
 				if (err != nil) { return err }
 				channels = append(channels, decoded)
-			}
+				return nil
+			})
 
 			return nil
 		})
