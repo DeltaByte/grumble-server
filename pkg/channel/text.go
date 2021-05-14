@@ -33,6 +33,13 @@ func (tc *TextChannel) Encode() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+func (tc *TextChannel) Decode(enc []byte) error {
+	buf := bytes.NewBuffer(enc)
+	dec := gob.NewDecoder(buf)
+	err := dec.Decode(tc)
+	return err
+}
+
 func (tc *TextChannel) Save(db *bolt.DB) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		// byte-encode the channel
@@ -40,7 +47,7 @@ func (tc *TextChannel) Save(db *bolt.DB) error {
 		if err != nil { return err }
 
 		// persist the channel
-		dbb := tx.Bucket([]byte("channels"))
+		dbb := tx.Bucket([]byte(DBBucket))
 		err = dbb.Put(tc.ID.Bytes(), enc)
 
 		return err
