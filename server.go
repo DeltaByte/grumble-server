@@ -5,15 +5,40 @@ import (
 	"log"
 
 	"github.com/getsentry/sentry-go"
-	sentryEcho "github.com/getsentry/sentry-go/echo"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	sentryEcho "github.com/getsentry/sentry-go/echo"
+	bolt "go.etcd.io/bbolt"
 
 	"gitlab.com/grumblechat/server/internal/config"
 	channelsController "gitlab.com/grumblechat/server/internal/controllers/channels"
-	"gitlab.com/grumblechat/server/internal/database"
 	"gitlab.com/grumblechat/server/internal/validation"
 )
+
+func initDB(path string) *bolt.DB {
+	// open BoltDB
+	dbPath := fmt.Sprintf("%s/grumble.db", path)
+	db, err := bolt.Open(dbPath, 0666, nil)
+
+	if err != nil {
+		panic("Failed to open database")
+	}
+
+	// ensure that buckets exist
+	err = db.Update(func(tx *bolt.Tx) error {
+		// channels
+		_, err := tx.CreateBucketIfNotExists([]byte("channels"))
+		if (err != nil) { return err }
+
+		return nil
+	})
+
+	if (err != nil) {
+		panic("Failed to migrate DB")
+	}
+
+	return db
+}
 
 func main() {
 	// load config
@@ -43,11 +68,12 @@ func main() {
 		}))
 	}
 
-	// load databases
-	database.Init(config.Storage.Database)
+	// load database
+	db := initDB(config.Storage.Database)
+	defer db.Close()
 
 	// bind controller routes
-	channelsController.BindRoutes(app.Group("/channels"))
+	channelsController.BindRoutes(app.Group("/channels"), db)
 
 	// start server
 	app.Start(fmt.Sprintf("%s:%d", config.Host, config.Port))

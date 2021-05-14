@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/dgraph-io/badger/v3"
 	"github.com/segmentio/ksuid"
+	bolt "go.etcd.io/bbolt"
 )
 
 type VoiceChannel struct {
 	ID      ksuid.KSUID `json:"id"`
-	Type    string      `json:"type" validate:"oneof:text voice,required"`
+	Type    string      `json:"type" validate:"oneof=text voice,required"`
 	Name    string      `json:"name" validate:"max=100,required"`
 	Bitrate uint8       `json:"bitrate"`
 }
@@ -32,15 +32,16 @@ func (vc *VoiceChannel) Encode() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (vc *VoiceChannel) Save(db *badger.DB) error {
-	err := db.Update(func(txn *badger.Txn) error {
+func (vc *VoiceChannel) Save(db *bolt.DB) error {
+	return db.Update(func(tx *bolt.Tx) error {
 		// byte-encode the channel
 		enc, err := vc.Encode()
 		if err != nil { return err }
 
 		// persist the channel
-		err = txn.Set(vc.ID.Bytes(), enc)
+		dbb := tx.Bucket([]byte("channels"))
+		err = dbb.Put(vc.ID.Bytes(), enc)
+
 		return err
 	})
-	return err
 }

@@ -1,8 +1,8 @@
 package channel
 
-import "github.com/dgraph-io/badger/v3"
+import bolt "go.etcd.io/bbolt"
 
 type Channel interface {
 	Encode() ([]byte, error)
-	Save(*badger.DB) error
+	Save(*bolt.DB) error
 }
