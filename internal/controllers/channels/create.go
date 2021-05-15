@@ -1,4 +1,4 @@
-package channels
+package channelsController
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 
 	"github.com/labstack/echo/v4"
-	"gitlab.com/grumblechat/server/pkg/channel"
+	"gitlab.com/grumblechat/server/pkg/channels"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -42,7 +42,7 @@ func getTypeFromBody(ctx echo.Context) (string, error) {
 
 func createHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var newChannel channel.Channel
+		var channel channels.Channel
 
 		// unmarshal raw body and write back to request
 		channelType, err := getTypeFromBody(ctx)
@@ -50,30 +50,30 @@ func createHandler(db *bolt.DB) echo.HandlerFunc {
 
 		// voice channel
 		if channelType == "voice" {
-			newChannel = channel.NewVoice()
-			if err := ctx.Bind(newChannel); err != nil {
+			channel = channels.NewVoice()
+			if err := ctx.Bind(channel); err != nil {
 				return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 			}
 		}
 
 		// text channel
 		if channelType == "text" {
-			newChannel = channel.NewText()
-			if err := ctx.Bind(newChannel); err != nil {
+			channel = channels.NewText()
+			if err := ctx.Bind(channel); err != nil {
 				return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 			}
 		}
 
 		// validate channel
-		if err = ctx.Validate(newChannel); err != nil {
+		if err = ctx.Validate(channel); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 
 		// persist channel
-		if err := newChannel.Save(db); err != nil {
+		if err := channel.Save(db); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
-		return ctx.JSON(http.StatusCreated, newChannel)
+		return ctx.JSON(http.StatusCreated, channel)
 	}
 }

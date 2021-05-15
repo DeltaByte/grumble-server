@@ -1,11 +1,11 @@
-package channels
+package channelsController
 
 import (
 	"github.com/labstack/echo/v4"
 	bolt "go.etcd.io/bbolt"
 )
 
-func BindRoutes(routeGroup *echo.Group, db *bolt.DB) {
-	routeGroup.GET("/", listHandler(db))
-	routeGroup.POST("/", createHandler(db))
+func BindRoutes(db *bolt.DB, router *echo.Group) {
+	router.GET("/", listHandler(db))
+	router.POST("/", createHandler(db))
 }

@@ -5,13 +5,13 @@ import (
 	"log"
 
 	"github.com/getsentry/sentry-go"
+	sentryEcho "github.com/getsentry/sentry-go/echo"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	sentryEcho "github.com/getsentry/sentry-go/echo"
 	bolt "go.etcd.io/bbolt"
 
 	"gitlab.com/grumblechat/server/internal/config"
-	channelsController "gitlab.com/grumblechat/server/internal/controllers/channels"
+	"gitlab.com/grumblechat/server/internal/controllers/channels"
 	"gitlab.com/grumblechat/server/internal/validation"
 )
 
@@ -73,7 +73,7 @@ func main() {
 	defer db.Close()
 
 	// bind controller routes
-	channelsController.BindRoutes(app.Group("/channels"), db)
+	channelsController.BindRoutes(db, app.Group("/channels"))
 
 	// start server
 	app.Start(fmt.Sprintf("%s:%d", config.Host, config.Port))
