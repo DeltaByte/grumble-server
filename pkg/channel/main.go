@@ -8,7 +8,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-const DBBucket = "channels"
+const BoltBucketName = "channels"
 
 type Channel interface {
 	GetType() string

@@ -2,6 +2,7 @@ package channel
 
 import (
 	"bytes"
+	"time"
 	"encoding/gob"
 
 	"github.com/segmentio/ksuid"
@@ -13,14 +14,18 @@ func NewVoice() *VoiceChannel {
 		ID:   ksuid.New(),
 		Type: "voice",
 		Bitrate: 64,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 }
 
 type VoiceChannel struct {
-	ID      ksuid.KSUID `json:"id"`
-	Type    string      `json:"type" validate:"eq=voice,required"`
-	Name    string      `json:"name" validate:"max=100,required"`
-	Bitrate uint8       `json:"bitrate" validate:"min=4,max=255"`
+	ID        ksuid.KSUID `json:"id" copier:"-"`
+	Type      string      `json:"type" validate:"eq=voice,required"`
+	Name      string      `json:"name" validate:"max=100,required"`
+	Bitrate   uint8       `json:"bitrate" validate:"min=4,max=255"`
+	CreatedAt time.Time   `json:"created_at" copier:"-"`
+	UpdatedAt time.Time   `json:"updated_at" copier:"-"`
 }
 
 func (vc *VoiceChannel) GetType() string {
@@ -51,7 +56,7 @@ func (vc *VoiceChannel) Save(db *bolt.DB) error {
 		if err != nil { return err }
 
 		// persist the channel
-		dbb := tx.Bucket([]byte(DBBucket))
+		dbb := tx.Bucket([]byte(BoltBucketName))
 		err = dbb.Put(vc.ID.Bytes(), enc)
 
 		return err

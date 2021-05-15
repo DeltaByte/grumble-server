@@ -3,8 +3,9 @@ package channelsController
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
 	"gitlab.com/grumblechat/server/pkg/channel"
+
+	"github.com/labstack/echo/v4"
 	bolt "go.etcd.io/bbolt"
 )
 

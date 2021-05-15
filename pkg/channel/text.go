@@ -2,9 +2,11 @@ package channel
 
 import (
 	"bytes"
+	"time"
 	"encoding/gob"
 
 	"github.com/segmentio/ksuid"
+	"gitlab.com/grumblechat/server/pkg/message"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -16,11 +18,13 @@ func NewText() *TextChannel {
 }
 
 type TextChannel struct {
-	ID    ksuid.KSUID `json:"id"`
-	Type  string      `json:"type" validate:"eq=text,required"`
-	Name  string      `json:"name" validate:"max=100,required"`
-	Topic string      `json:"topic" validate:"max=1024"`
-	NSFW  bool        `json:"nsfw" default:"false"`
+	ID        ksuid.KSUID `json:"id" copier:"-"`
+	Type      string      `json:"type" validate:"eq=text,required"`
+	Name      string      `json:"name" validate:"max=100,required"`
+	Topic     string      `json:"topic" validate:"max=1024"`
+	NSFW      bool        `json:"nsfw"`
+	CreatedAt time.Time   `json:"created_at" copier:"-"`
+	UpdatedAt time.Time   `json:"updated_at" copier:"-"`
 }
 
 func (tc *TextChannel) GetType() string {
@@ -51,7 +55,7 @@ func (tc *TextChannel) Save(db *bolt.DB) error {
 		if err != nil { return err }
 
 		// persist the channel
-		dbb := tx.Bucket([]byte(DBBucket))
+		dbb := tx.Bucket([]byte(BoltBucketName))
 		err = dbb.Put(tc.ID.Bytes(), enc)
 
 		return err

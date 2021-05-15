@@ -28,7 +28,7 @@ func initDB(path string) *bolt.DB {
 	// ensure that buckets exist
 	err = db.Update(func(tx *bolt.Tx) error {
 		// channels
-		_, err := tx.CreateBucketIfNotExists([]byte("channels"))
+		_, err := tx.CreateBucketIfNotExists([]byte(channel.BoltBucketName))
 		if (err != nil) { return err }
 
 		return nil
