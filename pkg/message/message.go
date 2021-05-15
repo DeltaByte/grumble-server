@@ -13,7 +13,7 @@ type Message struct {
 	ID        ksuid.KSUID `json:"id" copier:"-"`
 	ChannelID ksuid.KSUID `json:"channel_id"`
 	Body      string      `json:"body" validate:"min=1,max=2048,required"`
-	TTL       uint32      `json:"ttl"`
+	TTL       uint32      `json:"ttl" validate:"max=2592000"`
 	CreatedAt time.Time   `json:"created_at" copier:"-"`
 	UpdatedAt time.Time   `json:"updated_at" copier:"-"`
 }
