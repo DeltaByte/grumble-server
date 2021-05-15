@@ -11,6 +11,7 @@ import (
 const DBBucket = "channels"
 
 type Channel interface {
+	GetType() string
 	Encode() ([]byte, error)
 	Decode([]byte) error
 	Save(*bolt.DB) error

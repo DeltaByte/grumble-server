@@ -8,19 +8,23 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-type VoiceChannel struct {
-	ID      ksuid.KSUID `json:"id"`
-	Type    string      `json:"type" validate:"oneof=text voice,required"`
-	Name    string      `json:"name" validate:"max=100,required"`
-	Bitrate uint8       `json:"bitrate" validate:"min=4,max=255"`
-}
-
 func NewVoice() *VoiceChannel {
 	return &VoiceChannel{
 		ID:   ksuid.New(),
 		Type: "voice",
 		Bitrate: 64,
 	}
+}
+
+type VoiceChannel struct {
+	ID      ksuid.KSUID `json:"id"`
+	Type    string      `json:"type" validate:"eq=voice,required"`
+	Name    string      `json:"name" validate:"max=100,required"`
+	Bitrate uint8       `json:"bitrate" validate:"min=4,max=255"`
+}
+
+func (vc *VoiceChannel) GetType() string {
+	return vc.Type
 }
 
 func (vc *VoiceChannel) Encode() ([]byte, error) {

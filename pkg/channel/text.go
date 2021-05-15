@@ -8,19 +8,23 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-type TextChannel struct {
-	ID    ksuid.KSUID `json:"id"`
-	Type  string      `json:"type" validate:"oneof=text voice,required"`
-	Name  string      `json:"name" validate:"max=100,required"`
-	Topic string      `json:"topic" validate:"max=1024"`
-	NSFW  bool        `json:"nsfw" default:"false"`
-}
-
 func NewText() *TextChannel {
 	return &TextChannel{
 		ID:   ksuid.New(),
 		Type: "text",
 	}
+}
+
+type TextChannel struct {
+	ID    ksuid.KSUID `json:"id"`
+	Type  string      `json:"type" validate:"eq=text,required"`
+	Name  string      `json:"name" validate:"max=100,required"`
+	Topic string      `json:"topic" validate:"max=1024"`
+	NSFW  bool        `json:"nsfw" default:"false"`
+}
+
+func (tc *TextChannel) GetType() string {
+	return tc.Type
 }
 
 func (tc *TextChannel) Encode() ([]byte, error) {
