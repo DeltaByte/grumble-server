@@ -1,6 +1,9 @@
 package channel
 
-import bolt "go.etcd.io/bbolt"
+import (
+	"github.com/segmentio/ksuid"
+	bolt "go.etcd.io/bbolt"
+)
 
 func GetAll(db *bolt.DB) ([]Channel, error) {
 	var channels []Channel
@@ -20,4 +23,28 @@ func GetAll(db *bolt.DB) ([]Channel, error) {
 	})
 
 	return channels, err
+}
+
+func Find(db *bolt.DB, id ksuid.KSUID) (Channel, error) {
+	var channel Channel
+
+	err := db.View(func(tx *bolt.Tx) error {
+		dbb := tx.Bucket([]byte(DBBucket))
+
+		// get by ID
+		res := dbb.Get(id.Bytes())
+		if (res == nil) {
+			channel = nil
+			return nil
+		}
+
+		// decode channel
+		decoded, err := Decode(res)
+		if (err != nil) { return err }
+
+		channel = decoded
+		return nil
+	})
+
+	return channel, err
 }

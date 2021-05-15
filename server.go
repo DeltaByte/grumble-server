@@ -12,6 +12,7 @@ import (
 
 	"gitlab.com/grumblechat/server/internal/config"
 	"gitlab.com/grumblechat/server/internal/controllers/channels"
+	messagesController "gitlab.com/grumblechat/server/internal/controllers/messages"
 	"gitlab.com/grumblechat/server/internal/validation"
 )
 
@@ -74,6 +75,7 @@ func main() {
 
 	// bind controller routes
 	channelsController.BindRoutes(db, app.Group("/channels"))
+	messagesController.BindRoutes(db, app.Group("/channels/:channelID/messages"))
 
 	// start server
 	app.Start(fmt.Sprintf("%s:%d", config.Host, config.Port))
