@@ -14,6 +14,8 @@ import (
 	"gitlab.com/grumblechat/server/internal/controllers/channels"
 	messagesController "gitlab.com/grumblechat/server/internal/controllers/messages"
 	"gitlab.com/grumblechat/server/internal/validation"
+	"gitlab.com/grumblechat/server/pkg/channel"
+	"gitlab.com/grumblechat/server/pkg/message"
 )
 
 func initDB(path string) *bolt.DB {
@@ -29,6 +31,10 @@ func initDB(path string) *bolt.DB {
 	err = db.Update(func(tx *bolt.Tx) error {
 		// channels
 		_, err := tx.CreateBucketIfNotExists([]byte(channel.BoltBucketName))
+		if (err != nil) { return err }
+
+		// messages
+		_, err = tx.CreateBucketIfNotExists([]byte(message.BoltBucketName))
 		if (err != nil) { return err }
 
 		return nil

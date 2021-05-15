@@ -57,7 +57,13 @@ func (tc *TextChannel) Save(db *bolt.DB) error {
 		// persist the channel
 		dbb := tx.Bucket([]byte(BoltBucketName))
 		err = dbb.Put(tc.ID.Bytes(), enc)
+		if (err != nil) { return err }
 
+		// create a bucket for messages
+		msgBucket := tx.Bucket([]byte(message.BoltBucketName))
+		_, err = msgBucket.CreateBucketIfNotExists(tc.ID.Bytes())
+
+		// assumed that err is either an error or nil by this point
 		return err
 	})
 }

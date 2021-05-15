@@ -3,16 +3,19 @@ package message
 import (
 	"bytes"
 	"encoding/gob"
+	"time"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
 )
 
 type Message struct {
-	ID        ksuid.KSUID `json:"id"`
+	ID        ksuid.KSUID `json:"id" copier:"-"`
 	ChannelID ksuid.KSUID `json:"channel_id"`
-	Body      string      `json:"data"`
+	Body      string      `json:"body" validate:"min=1,max=2048,required"`
 	TTL       uint32      `json:"ttl"`
+	CreatedAt time.Time   `json:"created_at" copier:"-"`
+	UpdatedAt time.Time   `json:"updated_at" copier:"-"`
 }
 
 func (msg *Message) Encode() ([]byte, error) {
@@ -39,7 +42,7 @@ func (msg *Message) Save(db *bolt.DB) error {
 		if err != nil { return err }
 
 		// persist the channel
-		dbb := tx.Bucket(DBBucket(msg))
+		dbb := channelBucket(tx, msg)
 		err = dbb.Put(msg.ID.Bytes(), enc)
 
 		return err
