@@ -2,7 +2,6 @@ package pagination
 
 import (
 	"bytes"
-	"log"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -16,19 +15,16 @@ const (
 	countHeader  = "X-Pagination-Count"
 	countQueryParam = "count"
 	CountDefault = 50
+	reverseHeader = "X-Pagination-Reverse"
+	reverseQueryParam = "reverse"
 )
 
-func New(ctx echo.Context) (*Pagination, error) {
-	cursor, err := ParseCursor(ctx)
-	if (err != nil) { return nil, err }
-
-	count, err := ParseCount(ctx)
-	if (err != nil) { return nil, err }
-
+func New(ctx echo.Context) *Pagination {
 	return &Pagination{
-		Cursor: cursor,
-		Count: count,
-	}, nil
+		Cursor: ParseCursor(ctx),
+		Count: ParseCount(ctx),
+		Reverse: ParseReverse(ctx),
+	}
 }
 
 func SetHeaders(ctx echo.Context, pgn *Pagination) {
@@ -37,8 +33,9 @@ func SetHeaders(ctx echo.Context, pgn *Pagination) {
 }
 
 type Pagination struct {
-	Cursor ksuid.KSUID `query:"cursor"`
-	Count  uint16      `query:"count" validate:"min=1,max=1000"`
+	Cursor  ksuid.KSUID `query:"cursor"`
+	Count   uint16      `query:"count" validate:"min=1,max=1000"`
+	Reverse bool        `query:"reverse"`
 }
 
 func (pgn *Pagination) InitCursor(cursor *bolt.Cursor) (key []byte, value []byte) {
@@ -49,12 +46,24 @@ func (pgn *Pagination) InitCursor(cursor *bolt.Cursor) (key []byte, value []byte
 
 		// manually go to the next key if the found one is the same as the pagination cursor
 		if (bytes.Equal(seekKey, k)) {
-			k, v = cursor.Next()
+			k, v = pgn.MoveCursor(cursor)
 		}
 
 		return k, v
 	}
 
-	log.Print("using first")
+	// start from end of bucket if paginating in reverse order
+	if (pgn.Reverse) {
+		return cursor.Last()
+	}
+
 	return cursor.First()
+}
+
+func (pgn *Pagination) MoveCursor(cursor *bolt.Cursor) (key []byte, value []byte) {
+	if (pgn.Reverse) {
+		return cursor.Prev()
+	}
+
+	return cursor.Next()
 }

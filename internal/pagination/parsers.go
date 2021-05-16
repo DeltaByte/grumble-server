@@ -7,7 +7,7 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-func ParseCursor(ctx echo.Context) (ksuid.KSUID, error) {
+func ParseCursor(ctx echo.Context) ksuid.KSUID {
 	var value string
 
 	if header := ctx.Request().Header.Get(cursorHeader); header != "" {
@@ -18,14 +18,16 @@ func ParseCursor(ctx echo.Context) (ksuid.KSUID, error) {
 		value = query
 	}
 
-	if (value == "") {
-		return ksuid.Nil, nil
+	parsed, err := ksuid.Parse(value)
+
+	if (value == "" || err != nil) {
+		return ksuid.Nil
 	}
 
-	return ksuid.Parse(value)
+	return parsed
 }
 
-func ParseCount(ctx echo.Context) (uint16, error) {
+func ParseCount(ctx echo.Context) uint16 {
 	var value string
 
 	if header := ctx.Request().Header.Get(countHeader); header != "" {
@@ -36,11 +38,31 @@ func ParseCount(ctx echo.Context) (uint16, error) {
 		value = query
 	}
 
-	if (value == "") {
-		return CountDefault, nil
+	parsed, err := strconv.ParseUint(value, 10, 16)
+
+	if (value == "" || err != nil) {
+		return CountDefault
 	}
 
-	parsed, err := strconv.ParseUint(value, 10, 16)
-	if (err != nil) { return 0, err }
-	return uint16(parsed), nil
+	return uint16(parsed)
+}
+
+func ParseReverse(ctx echo.Context) bool {
+	var value string
+
+	if header := ctx.Request().Header.Get(reverseHeader); header != "" {
+		value = header
+	}
+
+	if query := ctx.QueryParam(reverseQueryParam); query != "" {
+		value = query
+	}
+
+	parsed, err := strconv.ParseBool(value)
+
+	if (value == "" || err != nil) {
+		return false
+	}
+
+	return parsed
 }

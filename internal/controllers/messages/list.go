@@ -13,16 +13,12 @@ import (
 
 func listHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		pgn := pagination.New(ctx)
+
 		// parse channelID
 		channelID, err := ksuid.Parse(ctx.Param("channelID"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		}
-
-		// parse pagination
-		pgn, err := pagination.New(ctx)
-		if (err != nil) {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		// validate pagination

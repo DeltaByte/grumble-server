@@ -7,7 +7,6 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-// TODO: add reverse-pagination for loading older messages
 func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]*Message, error) {
 	var messages []*Message
 
@@ -16,8 +15,8 @@ func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]
 		csr := dbb.Cursor()
 		var ctr uint16 = 1
 
-		// iterate over all channels, decode, and add to result
-		for k, v := pgn.InitCursor(csr); ctr <= pgn.Count && k != nil; k, v = csr.Next() {
+		// iterate over all messages, decode, and add to result
+		for k, v := pgn.InitCursor(csr); ctr <= pgn.Count && k != nil; k, v = pgn.MoveCursor(csr) {
 			decoded, err := Decode(v)
 			if (err != nil) { return err }
 			messages = append(messages, decoded)
