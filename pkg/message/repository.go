@@ -26,7 +26,7 @@ func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]
 		endKey, err := pgn.EndKey(csr)
 		if (err != nil) { return err }
 
-		pgn.Cursor = endKey
+		pgn.NextCursor = endKey
 		return nil
 	})
 

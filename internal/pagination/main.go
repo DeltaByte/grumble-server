@@ -17,25 +17,33 @@ const (
 	CountDefault = 50
 	reverseHeader = "X-Pagination-Reverse"
 	reverseQueryParam = "reverse"
+	moreHeader = "X-Pagination-More"
 )
 
 func New(ctx echo.Context) *Pagination {
 	return &Pagination{
 		Cursor: ParseCursor(ctx),
+		NextCursor: ksuid.Nil,
 		Count: ParseCount(ctx),
 		Reverse: ParseReverse(ctx),
 	}
 }
 
 func SetHeaders(ctx echo.Context, pgn *Pagination) {
-	ctx.Response().Header().Set(cursorHeader, pgn.Cursor.String())
+	hasMore := !pgn.NextCursor.IsNil()
+	ctx.Response().Header().Set(moreHeader, strconv.FormatBool(hasMore))
+	if (hasMore) {
+		ctx.Response().Header().Set(cursorHeader, pgn.NextCursor.String())
+	}
+
 	ctx.Response().Header().Set(countHeader, strconv.FormatUint(uint64(pgn.Count), 10))
 }
 
 type Pagination struct {
-	Cursor  ksuid.KSUID `query:"cursor"`
-	Count   uint16      `query:"count" validate:"min=1,max=1000"`
-	Reverse bool        `query:"reverse"`
+	Cursor     ksuid.KSUID `query:"cursor"`
+	NextCursor ksuid.KSUID
+	Count      uint16      `query:"count" validate:"min=1,max=1000"`
+	Reverse    bool        `query:"reverse"`
 }
 
 func (pgn *Pagination) InitCursor(cursor *bolt.Cursor) (key []byte, value []byte) {
