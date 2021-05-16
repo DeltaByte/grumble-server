@@ -23,10 +23,11 @@ func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]
 			ctr++
 		}
 
-		k, _ := csr.Prev()
-		endKey, err := ksuid.FromBytes(k)
+		endKey, err := pgn.EndKey(csr)
+		if (err != nil) { return err }
+
 		pgn.Cursor = endKey
-		return err
+		return nil
 	})
 
 	return messages, err

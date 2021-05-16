@@ -67,3 +67,17 @@ func (pgn *Pagination) MoveCursor(cursor *bolt.Cursor) (key []byte, value []byte
 
 	return cursor.Next()
 }
+
+func (pgn *Pagination) EndKey(cursor *bolt.Cursor) (ksuid.KSUID, error) {
+	key, _ := cursor.Prev()
+
+	if (pgn.Reverse) {
+		key, _ = cursor.Next()
+	}
+
+	if (key == nil) {
+		return ksuid.Nil, nil
+	}
+	
+	return ksuid.FromBytes(key)
+}
