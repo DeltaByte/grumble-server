@@ -13,7 +13,7 @@ type Message struct {
 	ID        ksuid.KSUID `json:"id" copier:"-"`
 	ChannelID ksuid.KSUID `json:"channel_id"`
 	Body      string      `json:"body" validate:"min=1,max=2048,required"`
-	TTL       uint32      `json:"ttl" validate:"max=2592000"`
+	TTL       uint32      `json:"ttl,omitempty" validate:"max=2592000"`
 	CreatedAt time.Time   `json:"created_at" copier:"-"`
 	UpdatedAt time.Time   `json:"updated_at" copier:"-"`
 }
@@ -42,7 +42,7 @@ func (msg *Message) Save(db *bolt.DB) error {
 		if err != nil { return err }
 
 		// persist the channel
-		dbb := channelBucket(tx, msg)
+		dbb := channelBucket(tx, &msg.ChannelID)
 		err = dbb.Put(msg.ID.Bytes(), enc)
 
 		return err
