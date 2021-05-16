@@ -13,11 +13,10 @@ const (
 )
 
 type coreConfig struct {
-	Port         uint   `default:"8080"`
-	Host         string `default:"0.0.0.0"`
-	EnableSentry bool   `default:"true"`
-	SentryDSN    string `default:""`
-	Storage      storageConfig
+	Storage storageConfig
+	Sentry  sentryConfig
+	Port    uint   `default:"8080"`
+	Host    string `default:"0.0.0.0"`
 }
 
 type storageConfig struct {
@@ -26,12 +25,17 @@ type storageConfig struct {
 	Logs     string `default:"./storage/logs"`
 }
 
+type sentryConfig struct {
+	Enable bool   `default:"true"`
+	DSN    string `default:""`
+}
+
 func Load() *coreConfig {
 	config := &coreConfig{}
 
 	// load constants, TBH this is mostly so that longer values can be moved out
 	// of the main struct so that it is slightly easier to read.
-	config.SentryDSN = sentryDSN
+	config.Sentry.DSN = sentryDSN
 
 	// parse env vars and load config file
 	configPath := flag.String("config-file", "config.json", "Configuration file location")

@@ -58,7 +58,7 @@ func main() {
 
 	// initialize Sentry client
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: config.SentryDSN,
+		Dsn: config.Sentry.DSN,
 	})
 	if err != nil {
 		log.Fatalf("Sentry initialization failed: %v\n", err)
@@ -75,7 +75,7 @@ func main() {
 	app.Use(middleware.Recover())
 
 	// report errors to sentry
-	if config.EnableSentry {
+	if config.Sentry.Enable {
 		app.Use(sentryEcho.New(sentryEcho.Options{
 			Repanic: true,
 		}))
