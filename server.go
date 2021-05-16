@@ -66,6 +66,7 @@ func main() {
 
 	// init framework
 	app := echo.New()
+	app.HideBanner = true
 	app.Validator = validation.Echo()
 	app.Pre(middleware.AddTrailingSlash())
 
