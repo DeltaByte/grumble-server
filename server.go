@@ -4,18 +4,21 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"time"
 
+	"github.com/grumblechat/server/internal/backup"
 	"github.com/grumblechat/server/internal/config"
+	channelsController "github.com/grumblechat/server/internal/controllers/channels"
+	messagesController "github.com/grumblechat/server/internal/controllers/messages"
 	"github.com/grumblechat/server/internal/validation"
 	"github.com/grumblechat/server/pkg/channel"
 	"github.com/grumblechat/server/pkg/message"
-	channelsController "github.com/grumblechat/server/internal/controllers/channels"
-	messagesController "github.com/grumblechat/server/internal/controllers/messages"
 
 	"github.com/getsentry/sentry-go"
+	sentryEcho "github.com/getsentry/sentry-go/echo"
+	"github.com/go-co-op/gocron"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	sentryEcho "github.com/getsentry/sentry-go/echo"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -54,11 +57,11 @@ func initDB(path string) *bolt.DB {
 
 func main() {
 	// load config
-	config := config.Load()
+	cfg := config.Load()
 
 	// initialize Sentry client
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: config.Sentry.DSN,
+		Dsn: cfg.Sentry.DSN,
 	})
 	if err != nil {
 		log.Fatalf("Sentry initialization failed: %v\n", err)
@@ -75,20 +78,25 @@ func main() {
 	app.Use(middleware.Recover())
 
 	// report errors to sentry
-	if config.Sentry.Enable {
+	if cfg.Sentry.Enable {
 		app.Use(sentryEcho.New(sentryEcho.Options{
 			Repanic: true,
 		}))
 	}
 
 	// load database
-	db := initDB(config.Storage.Database)
+	db := initDB(cfg.Storage.Database)
 	defer db.Close()
+
+	// schedule tasks
+	tasks := gocron.NewScheduler(time.Local)
+	tasks.Every(cfg.Backup.Schedule).Do(backup.Database, cfg, db)
 
 	// bind controller routes
 	channelsController.BindRoutes(db, app.Group("/channels"))
 	messagesController.BindRoutes(db, app.Group("/channels/:channelID/messages"))
 
 	// start server
-	app.Start(fmt.Sprintf("%s:%d", config.Host, config.Port))
+	tasks.StartAsync()
+	app.Start(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port))
 }

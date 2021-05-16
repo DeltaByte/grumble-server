@@ -57,7 +57,7 @@ _storage:_
 | database | string | Directory for storing the raw database files                             | `./storage/database` |            |
 | media    | string | Directory for storing media assets, such as images embedded in a message | `./storage/media`    |            |
 | logs     | string | Directory for log files                                                  | `./storage/logs`     |            |
-| backups  | string | Directory for storing backups                                            | `./storage/database` |            |
+| backup   | string | Directory for storing backups                                            | `./storage/backup`   |            |
 
 _sentry:_
 
@@ -66,3 +66,10 @@ _sentry:_
 | enable | bool   | Enable to automatic reporting of errors to [Sentry](https://sentry.io)                                                                                       | `true`        |            |
 | dsn    | string | [Sentry DSN](https://docs.sentry.io/product/sentry-basics/dsn-explainer/), this is useful for if you do want error reporting, but only to a private instance | `0.0.0.0`     |            |
 
+_backup:_
+
+| Name     | Type   | Description                                                                                                       | Default Value | Validation |
+| -------- | ------ | ----------------------------------------------------------------------------------------------------------------- | ------------- | ---------- |
+| schedule | string | How often to run the backups, setting this ot zero with prevent backups from running.                             | `6h0m`        |            |
+| amount   | number | How many backups to retain, e.g. keeping 28 backups if the schedule is `6h` will keep backups for 7 days.         | `28`          |            |
+| group    | bool   | Enables grouping backups by day, butting each group into a subdirectory, e.g. `backups/2020-01-01/db-2001.tar.gz` | `false`       |            |
