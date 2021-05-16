@@ -26,7 +26,7 @@ func Database(cfg *config.Config, db *bolt.DB) error {
 	
 	// stream DB through compressor and into file
 	err = db.View(func(tx *bolt.Tx) error {
-		foo, err := tx.WriteTo(file)
+		foo, err := tx.WriteTo(gz)
 		log.Printf("Backing up (%d)", foo)
 		return err
 	})
