@@ -3,7 +3,7 @@ package channelsController
 import (
 	"net/http"
 
-	"gitlab.com/grumblechat/server/pkg/channel"
+	"github.com/grumblechat/server/pkg/channel"
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
@@ -11,11 +11,11 @@ import (
 )
 
 type createHandlerDTO struct {
-	Type  string      `json:"type" validate:"oneof=text voice,required"`
-	Name  string      `json:"name"`
-	Topic string      `json:"topic"`
-	NSFW  bool        `json:"nsfw"`
-	Bitrate uint8     `json:"bitrate"`
+	Type    string `json:"type" validate:"oneof=text voice,required"`
+	Name    string `json:"name"`
+	Topic   string `json:"topic"`
+	NSFW    bool   `json:"nsfw"`
+	Bitrate uint8  `json:"bitrate"`
 }
 
 func createHandler(db *bolt.DB) echo.HandlerFunc {

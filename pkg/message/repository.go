@@ -1,7 +1,7 @@
 package message
 
 import (
-	"gitlab.com/grumblechat/server/internal/pagination"
+	"github.com/grumblechat/server/internal/pagination"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
@@ -10,7 +10,7 @@ import (
 func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]*Message, error) {
 	var messages []*Message
 
-	err := db.View(func(tx *bolt.Tx) (error) {
+	err := db.View(func(tx *bolt.Tx) error {
 		dbb := channelBucket(tx, channelID)
 		csr := dbb.Cursor()
 		var ctr uint16 = 1
@@ -18,13 +18,17 @@ func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]
 		// iterate over all messages, decode, and add to result
 		for k, v := pgn.InitCursor(csr); ctr <= pgn.Count && k != nil; k, v = pgn.MoveCursor(csr) {
 			decoded, err := Decode(v)
-			if (err != nil) { return err }
+			if err != nil {
+				return err
+			}
 			messages = append(messages, decoded)
 			ctr++
 		}
 
 		endKey, err := pgn.EndKey(csr)
-		if (err != nil) { return err }
+		if err != nil {
+			return err
+		}
 
 		pgn.NextCursor = endKey
 		return nil

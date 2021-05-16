@@ -2,11 +2,12 @@ package channel
 
 import (
 	"bytes"
-	"time"
 	"encoding/gob"
+	"time"
+
+	"github.com/grumblechat/server/pkg/message"
 
 	"github.com/segmentio/ksuid"
-	"gitlab.com/grumblechat/server/pkg/message"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -52,12 +53,16 @@ func (tc *TextChannel) Save(db *bolt.DB) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		// byte-encode the channel
 		enc, err := tc.Encode()
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 
 		// persist the channel
 		dbb := tx.Bucket([]byte(BoltBucketName))
 		err = dbb.Put(tc.ID.Bytes(), enc)
-		if (err != nil) { return err }
+		if err != nil {
+			return err
+		}
 
 		// create a bucket for messages
 		msgBucket := tx.Bucket([]byte(message.BoltBucketName))

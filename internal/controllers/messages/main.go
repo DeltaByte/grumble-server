@@ -3,7 +3,7 @@ package messagesController
 import (
 	"net/http"
 
-	"gitlab.com/grumblechat/server/pkg/channel"
+	"github.com/grumblechat/server/pkg/channel"
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
@@ -23,15 +23,15 @@ func BindRoutes(db *bolt.DB, router *echo.Group) {
 func validateChannel(db *bolt.DB, id ksuid.KSUID) *echo.HTTPError {
 	c, err := channel.Find(db, id)
 
-	if (err != nil) {
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	if (c == nil) {
+	if c == nil {
 		return echo.NewHTTPError(http.StatusNotFound, "Channel ID not recognized")
 	}
 
-	if (c.GetType() != "text") {
+	if c.GetType() != "text" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Messages are only available for 'text' channel types")
 	}
 

@@ -3,8 +3,8 @@ package messagesController
 import (
 	"net/http"
 
-	"gitlab.com/grumblechat/server/internal/pagination"
-	"gitlab.com/grumblechat/server/pkg/message"
+	"github.com/grumblechat/server/internal/pagination"
+	"github.com/grumblechat/server/pkg/message"
 
 	"github.com/labstack/echo/v4"
 	"github.com/segmentio/ksuid"
@@ -28,7 +28,7 @@ func listHandler(db *bolt.DB) echo.HandlerFunc {
 
 		// load messages from DB
 		res, err := message.GetAll(db, &channelID, pgn)
-		if (err != nil) {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
