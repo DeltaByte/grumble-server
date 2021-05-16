@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 
 	"github.com/grumblechat/server/internal/config"
 	"github.com/grumblechat/server/internal/validation"
@@ -20,7 +21,7 @@ import (
 
 func initDB(path string) *bolt.DB {
 	// open BoltDB
-	dbPath := fmt.Sprintf("%s/grumble.db", path)
+	dbPath := filepath.Join(path, "grumble.db")
 	db, err := bolt.Open(dbPath, 0666, nil)
 
 	if err != nil {
