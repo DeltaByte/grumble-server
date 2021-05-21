@@ -34,6 +34,12 @@ func updateHandler(db *bolt.DB) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
+		// prevent type switching,
+		// this is already caught by validation but I want a specific error for it
+		if dto.Type != chn.GetType() {
+			return echo.NewHTTPError(http.StatusBadRequest, "Channel types are immutable.")
+		}
+
 		// copy data from DTO
 		if err := copier.CopyWithOption(chn, dto, copierOptions); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

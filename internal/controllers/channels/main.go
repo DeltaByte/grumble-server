@@ -13,7 +13,7 @@ var copierOptions = copier.Option{
 func BindRoutes(db *bolt.DB, router *echo.Group) {
 	router.GET("", listHandler(db))
 	router.POST("", createHandler(db))
-	router.PUT("/:id", updateHandler(db))
+	router.PATCH("/:id", updateHandler(db))
 }
 
 type channelDTO struct {
