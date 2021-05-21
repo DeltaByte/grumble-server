@@ -7,7 +7,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]*Message, error) {
+func GetAll(db *bolt.DB, channelID ksuid.KSUID, pgn pagination.Pagination) ([]*Message, error) {
 	var messages []*Message
 
 	err := db.View(func(tx *bolt.Tx) error {
@@ -35,4 +35,28 @@ func GetAll(db *bolt.DB, channelID *ksuid.KSUID, pgn *pagination.Pagination) ([]
 	})
 
 	return messages, err
+}
+
+func Find(db *bolt.DB, channelID ksuid.KSUID, id ksuid.KSUID) (*Message, error) {
+	var msg *Message
+
+	err := db.View(func(tx *bolt.Tx) error {
+		dbb := channelBucket(tx, channelID)
+
+		// get by ID
+		res := dbb.Get(id.Bytes())
+		if (res == nil) {
+			msg = nil
+			return nil
+		}
+
+		// decode channel
+		decoded, err := Decode(res)
+		if (err != nil) { return err }
+
+		msg = decoded
+		return nil
+	})
+
+	return msg, err
 }

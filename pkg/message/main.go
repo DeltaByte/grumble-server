@@ -26,7 +26,7 @@ func Decode(enc []byte) (*Message, error) {
 }
 
 // NOTE: the BoltDB bucket should have been created as part of saving the Channel
-func channelBucket(tx *bolt.Tx, channelID *ksuid.KSUID) *bolt.Bucket {
+func channelBucket(tx *bolt.Tx, channelID ksuid.KSUID) *bolt.Bucket {
 	msgBucket := tx.Bucket([]byte(BoltBucketName))
 	return msgBucket.Bucket(channelID.Bytes())
 }

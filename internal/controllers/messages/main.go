@@ -16,24 +16,37 @@ var copierOptions = copier.Option{
 }
 
 func BindRoutes(db *bolt.DB, router *echo.Group) {
-	router.GET("/", listHandler(db))
-	router.POST("/", createHandler(db))
+	router.GET("", listHandler(db))
+	router.POST("", createHandler(db))
+	router.PATCH("/:id", updateHandler(db))
 }
 
-func validateChannel(db *bolt.DB, id ksuid.KSUID) *echo.HTTPError {
-	c, err := channel.Find(db, id)
+type messageDTO struct {
+	ChannelID ksuid.KSUID `json:"channel_id"`
+	Body      string      `json:"body"`
+	TTL       uint32      `json:"ttl"`
+}
+
+func getChannel(db *bolt.DB, channelID string) (*channel.TextChannel, *echo.HTTPError) {
+	id, err := ksuid.Parse(channelID)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	chn, err := channel.Find(db, id)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	if c == nil {
-		return echo.NewHTTPError(http.StatusNotFound, "Channel ID not recognized")
+	if chn == nil {
+		return nil, echo.NewHTTPError(http.StatusNotFound, "Channel ID not recognized")
 	}
 
-	if c.GetType() != "text" {
-		return echo.NewHTTPError(http.StatusBadRequest, "Messages are only available for 'text' channel types")
+	if chn.GetType() != "text" {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "Messages are only available for 'text' channel types")
 	}
 
-	return nil
+	textChannel := chn.(*channel.TextChannel)
+	return textChannel, nil
 }

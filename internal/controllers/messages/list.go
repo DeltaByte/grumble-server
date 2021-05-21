@@ -27,7 +27,7 @@ func listHandler(db *bolt.DB) echo.HandlerFunc {
 		}
 
 		// load messages from DB
-		res, err := message.GetAll(db, &channelID, pgn)
+		res, err := message.GetAll(db, channelID, *pgn)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}

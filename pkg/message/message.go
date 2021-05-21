@@ -50,7 +50,7 @@ func (msg *Message) Save(db *bolt.DB) error {
 		if err != nil { return err }
 
 		// persist the channel
-		dbb := channelBucket(tx, &msg.ChannelID)
+		dbb := channelBucket(tx, msg.ChannelID)
 		err = dbb.Put(msg.ID.Bytes(), enc)
 
 		return err
