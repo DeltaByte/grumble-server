@@ -3,11 +3,13 @@ package database
 import (
 	"path/filepath"
 
-	"github.com/grumblechat/server/pkg/channel"
-	"github.com/grumblechat/server/pkg/message"
-
 	bolt "go.etcd.io/bbolt"
 )
+
+func initBucket(tx *bolt.Tx, name string) error {
+	_, err := tx.CreateBucketIfNotExists([]byte(name))
+	return err
+}
 
 func Init(path string) *bolt.DB {
 	// open BoltDB
@@ -21,14 +23,12 @@ func Init(path string) *bolt.DB {
 	// ensure that buckets exist
 	err = db.Update(func(tx *bolt.Tx) error {
 		// channels
-		_, err := tx.CreateBucketIfNotExists([]byte(channel.BoltBucketName))
-		if err != nil {
+		if err := initBucket(tx, "channels"); err != nil {
 			return err
 		}
 
 		// messages
-		_, err = tx.CreateBucketIfNotExists([]byte(message.BoltBucketName))
-		if err != nil {
+		if err := initBucket(tx, "messages"); err != nil {
 			return err
 		}
 
