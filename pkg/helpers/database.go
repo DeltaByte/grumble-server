@@ -4,9 +4,9 @@ import (
 	"time"
 )
 
-func TouchTimestamp(ts time.Time, nilOnly bool) time.Time {
+func TouchTimestamp(ts time.Time, now time.Time, nilOnly bool) time.Time {
 	if ts.IsZero() || !nilOnly {
-		return time.Now()
+		return now
 	}
 	return ts
 }

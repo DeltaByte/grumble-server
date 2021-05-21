@@ -54,8 +54,9 @@ func (vc *VoiceChannel) Decode(enc []byte) error {
 
 func (vc *VoiceChannel) Save(db *bolt.DB) error {
 	// update timestamps
-	vc.CreatedAt = helpers.TouchTimestamp(vc.CreatedAt, true)
-	vc.UpdatedAt = helpers.TouchTimestamp(vc.UpdatedAt, false)
+	now := time.Now()
+	vc.CreatedAt = helpers.TouchTimestamp(vc.CreatedAt, now, true)
+	vc.UpdatedAt = helpers.TouchTimestamp(vc.UpdatedAt, now, false)
 
 	// persist to DB
 	return db.Update(func(tx *bolt.Tx) error {

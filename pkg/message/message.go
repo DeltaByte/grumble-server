@@ -39,8 +39,9 @@ func (msg *Message) Decode(enc []byte) error {
 
 func (msg *Message) Save(db *bolt.DB) error {
 	// update timestamps
-	msg.CreatedAt = helpers.TouchTimestamp(msg.CreatedAt, true)
-	msg.UpdatedAt = helpers.TouchTimestamp(msg.UpdatedAt, false)
+	now := time.Now()
+	msg.CreatedAt = helpers.TouchTimestamp(msg.CreatedAt, now, true)
+	msg.UpdatedAt = helpers.TouchTimestamp(msg.UpdatedAt, now, false)
 
 	// persist to DB
 	return db.Update(func(tx *bolt.Tx) error {

@@ -51,8 +51,9 @@ func (tc *TextChannel) Decode(enc []byte) error {
 
 func (tc *TextChannel) Save(db *bolt.DB) error {
 	// update timestamps
-	tc.CreatedAt = helpers.TouchTimestamp(tc.CreatedAt, true)
-	tc.UpdatedAt = helpers.TouchTimestamp(tc.UpdatedAt, false)
+	now := time.Now()
+	tc.CreatedAt = helpers.TouchTimestamp(tc.CreatedAt, now, true)
+	tc.UpdatedAt = helpers.TouchTimestamp(tc.UpdatedAt, now, false)
 
 	// persist to DB
 	return db.Update(func(tx *bolt.Tx) error {
