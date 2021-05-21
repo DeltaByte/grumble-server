@@ -29,8 +29,8 @@ type pathsConfig struct {
 }
 
 type sentryConfig struct {
-	Enable bool   `default:"true"`
-	DSN    string `default:""`
+	Enabled bool   `default:"true"`
+	DSN     string `default:""`
 }
 
 type backupConfig struct {

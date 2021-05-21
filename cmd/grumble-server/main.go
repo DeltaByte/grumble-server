@@ -45,7 +45,7 @@ func main() {
 	app.Use(middleware.PoweredBy())
 
 	// report errors to sentry
-	if cfg.Sentry.Enable {
+	if cfg.Sentry.Enabled {
 		app.Use(sentryEcho.New(sentryEcho.Options{
 			Repanic: true,
 		}))

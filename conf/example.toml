@@ -1,2 +1,16 @@
 host = "0.0.0.0"
 port = 80
+
+[paths]
+database = "./storage/database"
+media = "./storage/media"
+logs = "./storage/logs"
+backup = "./storage/backup"
+
+[sentry]
+enabled = true
+
+[backup]
+schedule = "6h"
+amount = 28
+group = false
