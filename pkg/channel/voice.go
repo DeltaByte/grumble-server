@@ -2,8 +2,10 @@ package channel
 
 import (
 	"bytes"
-	"time"
 	"encoding/gob"
+	"time"
+
+	"github.com/grumblechat/server/pkg/helpers"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
@@ -49,14 +51,20 @@ func (vc *VoiceChannel) Decode(enc []byte) error {
 	return err
 }
 
+
 func (vc *VoiceChannel) Save(db *bolt.DB) error {
+	// update timestamps
+	vc.CreatedAt = helpers.TouchTimestamp(vc.CreatedAt, true)
+	vc.UpdatedAt = helpers.TouchTimestamp(vc.UpdatedAt, false)
+
+	// persist to DB
 	return db.Update(func(tx *bolt.Tx) error {
 		// byte-encode the channel
 		enc, err := vc.Encode()
 		if err != nil { return err }
 
 		// persist the channel
-		dbb := tx.Bucket([]byte(BoltBucketName))
+		dbb := tx.Bucket([]byte("channels"))
 		err = dbb.Put(vc.ID.Bytes(), enc)
 
 		return err

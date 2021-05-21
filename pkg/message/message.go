@@ -5,6 +5,8 @@ import (
 	"encoding/gob"
 	"time"
 
+	"github.com/grumblechat/server/pkg/helpers"
+
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
 )
@@ -36,6 +38,11 @@ func (msg *Message) Decode(enc []byte) error {
 }
 
 func (msg *Message) Save(db *bolt.DB) error {
+	// update timestamps
+	msg.CreatedAt = helpers.TouchTimestamp(msg.CreatedAt, true)
+	msg.UpdatedAt = helpers.TouchTimestamp(msg.UpdatedAt, false)
+
+	// persist to DB
 	return db.Update(func(tx *bolt.Tx) error {
 		// byte-encode the channel
 		enc, err := msg.Encode()

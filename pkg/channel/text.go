@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"time"
 
-	"github.com/grumblechat/server/pkg/message"
+	"github.com/grumblechat/server/pkg/helpers"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
@@ -50,6 +50,11 @@ func (tc *TextChannel) Decode(enc []byte) error {
 }
 
 func (tc *TextChannel) Save(db *bolt.DB) error {
+	// update timestamps
+	tc.CreatedAt = helpers.TouchTimestamp(tc.CreatedAt, true)
+	tc.UpdatedAt = helpers.TouchTimestamp(tc.UpdatedAt, false)
+
+	// persist to DB
 	return db.Update(func(tx *bolt.Tx) error {
 		// byte-encode the channel
 		enc, err := tc.Encode()
@@ -58,14 +63,14 @@ func (tc *TextChannel) Save(db *bolt.DB) error {
 		}
 
 		// persist the channel
-		dbb := tx.Bucket([]byte(BoltBucketName))
+		dbb := tx.Bucket([]byte("channels"))
 		err = dbb.Put(tc.ID.Bytes(), enc)
 		if err != nil {
 			return err
 		}
 
 		// create a bucket for messages
-		msgBucket := tx.Bucket([]byte(message.BoltBucketName))
+		msgBucket := tx.Bucket([]byte("messages"))
 		_, err = msgBucket.CreateBucketIfNotExists(tc.ID.Bytes())
 
 		// assumed that err is either an error or nil by this point

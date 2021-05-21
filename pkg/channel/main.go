@@ -8,8 +8,6 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-const BoltBucketName = "channels"
-
 type Channel interface {
 	GetType() string
 	Encode() ([]byte, error)

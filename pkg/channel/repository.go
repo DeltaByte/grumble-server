@@ -9,7 +9,7 @@ func GetAll(db *bolt.DB) ([]Channel, error) {
 	var channels []Channel
 
 	err := db.View(func(tx *bolt.Tx) (error) {
-		dbb := tx.Bucket([]byte(BoltBucketName))
+		dbb := tx.Bucket([]byte("channels"))
 
 		// iterate over all channels, decode, and add to result
 		dbb.ForEach(func(k, v []byte) error {
@@ -29,7 +29,7 @@ func Find(db *bolt.DB, id ksuid.KSUID) (Channel, error) {
 	var channel Channel
 
 	err := db.View(func(tx *bolt.Tx) error {
-		dbb := tx.Bucket([]byte(BoltBucketName))
+		dbb := tx.Bucket([]byte("channels"))
 
 		// get by ID
 		res := dbb.Get(id.Bytes())
