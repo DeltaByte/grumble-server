@@ -34,7 +34,7 @@ func main() {
 	app := echo.New()
 	app.HideBanner = true
 	app.Validator = validation.Echo()
-	app.Pre(echoMiddleware.AddTrailingSlash())
+	app.Pre(echoMiddleware.RemoveTrailingSlash())
 
 	// register global middleware
 	app.Use(echoMiddleware.Logger())
