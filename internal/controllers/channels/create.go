@@ -10,20 +10,12 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-type createHandlerDTO struct {
-	Type    string `json:"type" validate:"oneof=text voice,required"`
-	Name    string `json:"name"`
-	Topic   string `json:"topic"`
-	NSFW    bool   `json:"nsfw"`
-	Bitrate uint8  `json:"bitrate"`
-}
-
 func createHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var newChannel channel.Channel
 
 		// bind request to Data Transfer Object
-		dto := &createHandlerDTO{}
+		dto := &channelDTO{}
 		if err := ctx.Bind(dto); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
