@@ -25,10 +25,8 @@ func main() {
 	cfg := config.Load()
 
 	// initialize Sentry client
-	err := sentry.Init(sentry.ClientOptions{
-		Dsn: cfg.Sentry.DSN,
-	})
-	if err != nil {
+	sentryOpts := sentry.ClientOptions{ Dsn: cfg.Sentry.DSN }
+	if err := sentry.Init(sentryOpts); err != nil {
 		log.Fatalf("Sentry initialization failed: %v\n", err)
 	}
 
