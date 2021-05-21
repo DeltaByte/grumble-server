@@ -14,14 +14,14 @@ const (
 )
 
 type Config struct {
-	Storage storageConfig
-	Sentry  sentryConfig
-	Backup  backupConfig
-	Port    uint   `default:"8080"`
-	Host    string `default:"0.0.0.0"`
+	Paths  pathsConfig
+	Sentry sentryConfig
+	Backup backupConfig
+	Port   uint   `default:"8080"`
+	Host   string `default:"0.0.0.0"`
 }
 
-type storageConfig struct {
+type pathsConfig struct {
 	Database string `default:"./storage/database"`
 	Media    string `default:"./storage/media"`
 	Logs     string `default:"./storage/logs"`

@@ -11,7 +11,7 @@ import (
 )
 
 func directory(cfg *config.Config) string {
-	path := cfg.Storage.Backup
+	path := cfg.Paths.Backup
 	now  := time.Now()
 
 	if (cfg.Backup.Group) {

@@ -1,8 +1,8 @@
 # Configuration
 
 The config object consists of several keys in the `core` section, and several sub-objects which are attached to the `core` config.
-For example the `storage` config when represented in a JSON file would look like the example below, for `ENV` vars the hierarchy is replaced with an underscore,
-e.g. `GRUMBLE_STORAGE_DATABASE`.
+For example the `paths` config when represented in a JSON file would look like the example below, for `ENV` vars the hierarchy is replaced with an underscore,
+e.g. `GRUMBLE_PATHS_DATABASE`.
 
 ```json
 {
@@ -50,7 +50,7 @@ _core:_
 | port | number | HTTP port    | `8080`        |            |
 | host | string | Host Address | `0.0.0.0`     |            |
 
-_storage:_
+_paths:_
 
 | Name     | Type   | Description                                                              | Default Value        | Validation |
 | -------- | ------ | ------------------------------------------------------------------------ | -------------------- | ---------- |
