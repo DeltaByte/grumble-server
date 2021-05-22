@@ -10,6 +10,7 @@ import (
 	channelsController "github.com/grumblechat/server/internal/controllers/channels"
 	messagesController "github.com/grumblechat/server/internal/controllers/messages"
 	"github.com/grumblechat/server/internal/database"
+	"github.com/grumblechat/server/internal/logging"
 	"github.com/grumblechat/server/internal/middleware"
 	"github.com/grumblechat/server/internal/validation"
 
@@ -32,6 +33,11 @@ func main() {
 		log.Fatalf("Sentry initialization failed: %v\n", err)
 	}
 
+	// init backend crap
+	logging.Init()
+	db := database.Init(cfg.Paths.Database)
+	defer db.Close()
+
 	// init framework
 	app := echo.New()
 	app.HideBanner = true
@@ -39,7 +45,7 @@ func main() {
 	app.Pre(echoMiddleware.RemoveTrailingSlash())
 
 	// register global middleware
-	app.Use(echoMiddleware.Logger())
+	app.Use(middleware.Logger(cfg))
 	app.Use(echoMiddleware.Recover())
 	app.Use(echoMiddleware.RequestID())
 	app.Use(middleware.PoweredBy(version))
@@ -50,10 +56,6 @@ func main() {
 			Repanic: true,
 		}))
 	}
-
-	// load database
-	db := database.Init(cfg.Paths.Database)
-	defer db.Close()
 
 	// schedule tasks
 	tasks := gocron.NewScheduler(time.Local)

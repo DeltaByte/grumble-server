@@ -14,9 +14,10 @@ const (
 )
 
 type Config struct {
-	Paths  pathsConfig
-	Sentry sentryConfig
-	Backup backupConfig
+	Paths   pathsConfig
+	Sentry  sentryConfig
+	Backup  backupConfig
+	Logging loggingConfig
 	Port   uint   `default:"8080"`
 	Host   string `default:"0.0.0.0"`
 }
@@ -37,6 +38,11 @@ type backupConfig struct {
 	Schedule time.Duration `default:"6h"`
 	Amount   uint16        `default:"28"`
 	Group    bool          `default:"false"`
+}
+
+type loggingConfig struct {
+	RemoteIP  bool `default:"true"`
+	UserAgent bool `default:"true"`
 }
 
 func Load() *Config {
