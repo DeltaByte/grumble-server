@@ -19,6 +19,7 @@ func BindRoutes(db *bolt.DB, router *echo.Group) {
 	router.GET("", listHandler(db))
 	router.POST("", createHandler(db))
 	router.PATCH("/:id", updateHandler(db))
+	router.DELETE("/:id", deleteHandler(db))
 }
 
 type messageDTO struct {

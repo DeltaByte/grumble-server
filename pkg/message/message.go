@@ -56,3 +56,15 @@ func (msg *Message) Save(db *bolt.DB) error {
 		return err
 	})
 }
+
+func (msg *Message) Delete(db *bolt.DB) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		dbb := channelBucket(tx, msg.ChannelID)
+
+		// delete self
+		err := dbb.Delete(msg.ID.Bytes())
+
+		// assumed that err is either an error or nil by this point
+		return err
+	})
+}
