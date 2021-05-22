@@ -38,6 +38,6 @@ func deleteHandler(db *bolt.DB) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
-		return ctx.JSON(http.StatusOK, msg)
+		return ctx.JSON(http.StatusOK, "Message deleted.")
 	}
 }

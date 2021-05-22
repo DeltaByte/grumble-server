@@ -5,8 +5,8 @@ import (
 
 	"github.com/grumblechat/server/pkg/channel"
 
-	"github.com/segmentio/ksuid"
 	"github.com/labstack/echo/v4"
+	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -14,7 +14,7 @@ func deleteHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		// parse ID
 		id, err := ksuid.Parse(ctx.Param("id"))
-		if (err != nil) {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
@@ -32,6 +32,6 @@ func deleteHandler(db *bolt.DB) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
-		return ctx.JSON(http.StatusCreated, chn)
+		return ctx.JSON(http.StatusCreated, "Channel deleted.")
 	}
 }
