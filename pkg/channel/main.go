@@ -13,6 +13,7 @@ type Channel interface {
 	Encode() ([]byte, error)
 	Decode([]byte) error
 	Save(*bolt.DB) error
+	Delete(*bolt.DB) error
 }
 
 func Decode(encoded []byte) (Channel, error) {

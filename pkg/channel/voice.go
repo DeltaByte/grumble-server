@@ -71,3 +71,15 @@ func (vc *VoiceChannel) Save(db *bolt.DB) error {
 		return err
 	})
 }
+
+func (vc *VoiceChannel) Delete(db *bolt.DB) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		dbb := tx.Bucket([]byte("channels"))
+
+		// delete self
+		err := dbb.Delete(vc.ID.Bytes())
+
+		// assumed that err is either an error or nil by this point
+		return err
+	})
+}

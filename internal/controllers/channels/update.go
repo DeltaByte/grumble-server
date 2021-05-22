@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/grumblechat/server/pkg/channel"
-	"github.com/segmentio/ksuid"
 
+	"github.com/segmentio/ksuid"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	bolt "go.etcd.io/bbolt"

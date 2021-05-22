@@ -78,3 +78,21 @@ func (tc *TextChannel) Save(db *bolt.DB) error {
 		return err
 	})
 }
+
+func (tc *TextChannel) Delete(db *bolt.DB) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		dbb := tx.Bucket([]byte("channels"))
+
+		// delete message bucket
+		msgBucket := tx.Bucket([]byte("messages"))
+		if err := msgBucket.DeleteBucket(tc.ID.Bytes()); err != nil {
+			return err
+		}
+
+		// delete self
+		err := dbb.Delete(tc.ID.Bytes())
+
+		// assumed that err is either an error or nil by this point
+		return err
+	})
+}
