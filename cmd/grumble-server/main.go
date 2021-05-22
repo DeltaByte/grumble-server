@@ -20,6 +20,8 @@ import (
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
 
+var version string
+
 func main() {
 	// load config
 	cfg := config.Load()
@@ -40,7 +42,7 @@ func main() {
 	app.Use(echoMiddleware.Logger())
 	app.Use(echoMiddleware.Recover())
 	app.Use(echoMiddleware.RequestID())
-	app.Use(middleware.PoweredBy())
+	app.Use(middleware.PoweredBy(version))
 
 	// report errors to sentry
 	if cfg.Sentry.Enabled {
