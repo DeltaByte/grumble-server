@@ -24,6 +24,12 @@ func Init() {
 		failed = true
 	}
 
+	// task logger
+	if err := initTaskLogger(); err != nil {
+		log.Fatal("Failed to init task logger", err)
+		failed = true
+	}
+
 	// panic if any of the secondary loggers failed to init
 	if failed {
 		panic("One or more loggers failed to init")

@@ -12,11 +12,11 @@ import (
 	"github.com/grumblechat/server/internal/database"
 	"github.com/grumblechat/server/internal/logging"
 	"github.com/grumblechat/server/internal/middleware"
+	"github.com/grumblechat/server/internal/tasks"
 	"github.com/grumblechat/server/internal/validation"
 
 	"github.com/getsentry/sentry-go"
 	sentryEcho "github.com/getsentry/sentry-go/echo"
-	"github.com/go-co-op/gocron"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
@@ -28,19 +28,21 @@ func main() {
 	cfg := config.Load()
 
 	// initialize Sentry client
-	sentryOpts := sentry.ClientOptions{ Dsn: cfg.Sentry.DSN }
+	sentryOpts := sentry.ClientOptions{Dsn: cfg.Sentry.DSN}
 	if err := sentry.Init(sentryOpts); err != nil {
 		log.Fatalf("Sentry initialization failed: %v\n", err)
 	}
 
 	// init backend crap
 	logging.Init()
+	log := logging.Default()
 	db := database.Init(cfg.Paths.Database)
 	defer db.Close()
 
 	// init framework
 	app := echo.New()
 	app.HideBanner = true
+	app.HidePort = true
 	app.Validator = validation.Echo()
 	app.Pre(echoMiddleware.RemoveTrailingSlash())
 
@@ -57,13 +59,12 @@ func main() {
 		}))
 	}
 
-	// schedule tasks
-	tasks := gocron.NewScheduler(time.Local)
-	tasks.Every(cfg.Backup.Schedule).Do(backup.Database, cfg, db)
-
 	// bind controller routes
 	channelsController.BindRoutes(db, app.Group("/channels"))
 	messagesController.BindRoutes(db, app.Group("/channels/:channelID/messages"))
+
+	// start task scheduler
+	tasks.Run(db, cfg)
 
 	// start server
 	tasks.StartAsync()
