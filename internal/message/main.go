@@ -1,8 +1,6 @@
 package message
 
 import (
-	"time"
-
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
 )
@@ -14,8 +12,6 @@ func New(channelID ksuid.KSUID) *Message {
 		ID: ksuid.New(),
 		ChannelID: channelID,
 		TTL:  0,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 }
 
