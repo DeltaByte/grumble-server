@@ -3,11 +3,11 @@ package channelsController
 import (
 	"net/http"
 
-	"github.com/grumblechat/server/pkg/channel"
+	"github.com/grumblechat/server/internal/channel"
 
-	"github.com/segmentio/ksuid"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
+	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -15,7 +15,7 @@ func updateHandler(db *bolt.DB) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		// parse ID
 		id, err := ksuid.Parse(ctx.Param("id"))
-		if (err != nil) {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 

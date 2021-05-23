@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/grumblechat/server/internal/backup"
 	"github.com/grumblechat/server/internal/config"
 	channelsController "github.com/grumblechat/server/internal/controllers/channels"
 	messagesController "github.com/grumblechat/server/internal/controllers/messages"

@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"time"
 
-	"github.com/grumblechat/server/pkg/helpers"
+	"github.com/grumblechat/server/internal/helpers"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
@@ -47,7 +47,9 @@ func (msg *Message) Save(db *bolt.DB) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		// byte-encode the channel
 		enc, err := msg.Encode()
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 
 		// persist the channel
 		dbb := channelBucket(tx, msg.ChannelID)

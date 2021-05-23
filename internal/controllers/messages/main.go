@@ -3,7 +3,7 @@ package messagesController
 import (
 	"net/http"
 
-	"github.com/grumblechat/server/pkg/channel"
+	"github.com/grumblechat/server/internal/channel"
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"

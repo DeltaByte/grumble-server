@@ -3,8 +3,8 @@ package messagesController
 import (
 	"net/http"
 
+	"github.com/grumblechat/server/internal/message"
 	"github.com/grumblechat/server/internal/pagination"
-	"github.com/grumblechat/server/pkg/message"
 
 	"github.com/labstack/echo/v4"
 	"github.com/segmentio/ksuid"
