@@ -20,6 +20,7 @@ type Config struct {
 	Logging loggingConfig
 	Port   uint   `default:"8080"`
 	Host   string `default:"0.0.0.0"`
+	Banner bool   `default:"true"`
 }
 
 type pathsConfig struct {

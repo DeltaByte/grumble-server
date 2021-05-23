@@ -45,10 +45,11 @@ grumble-server --config-file="/path/to/overrides.json" --config-file="config.jso
 
 _core:_
 
-| Name | Type   | Description  | Default Value | Validation |
-| ---- | ------ | ------------ | ------------- | ---------- |
-| port | number | HTTP port    | `8080`        |            |
-| host | string | Host Address | `0.0.0.0`     |            |
+| Name   | Type   | Description               | Default Value | Validation |
+| ------ | ------ | ------------------------- | ------------- | ---------- |
+| port   | number | HTTP port                 | `8080`        |            |
+| host   | string | Host Address              | `0.0.0.0`     |            |
+| banner | bool   | Display banner on startup | `true`        |            |
 
 _paths:_
 

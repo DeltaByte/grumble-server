@@ -27,6 +27,10 @@ func main() {
 	// load config
 	cfg := config.Load()
 
+	if (cfg.Banner) {
+		printBanner()
+	}
+
 	// initialize Sentry client
 	sentryOpts := sentry.ClientOptions{Dsn: cfg.Sentry.DSN}
 	if err := sentry.Init(sentryOpts); err != nil {
