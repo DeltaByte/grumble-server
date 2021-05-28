@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"time"
 
-	"github.com/grumblechat/server/internal/helpers"
+	"github.com/deltabyte/grumble-server/internal/helpers"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"

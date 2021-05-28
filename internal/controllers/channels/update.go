@@ -3,7 +3,7 @@ package channelsController
 import (
 	"net/http"
 
-	"github.com/grumblechat/server/internal/channel"
+	"github.com/deltabyte/grumble-server/internal/entities/channel"
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"

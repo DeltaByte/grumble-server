@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/grumblechat/server/internal/pagination"
+	"github.com/deltabyte/grumble-server/internal/pagination"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
@@ -45,14 +45,16 @@ func Find(db *bolt.DB, channelID ksuid.KSUID, id ksuid.KSUID) (*Message, error) 
 
 		// get by ID
 		res := dbb.Get(id.Bytes())
-		if (res == nil) {
+		if res == nil {
 			msg = nil
 			return nil
 		}
 
 		// decode channel
 		decoded, err := Decode(res)
-		if (err != nil) { return err }
+		if err != nil {
+			return err
+		}
 
 		msg = decoded
 		return nil
