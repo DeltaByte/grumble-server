@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/grumblechat/server/internal/config"
+	"github.com/deltabyte/grumble-server/internal/config"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
@@ -65,8 +65,8 @@ func BackupDatabase(ctx TaskContext) error {
 		ctx.log.Info("Starting DB backup")
 		size, err := tx.WriteTo(gz)
 		ctx.log.With(
-			"size", size,
 			"file", filePath,
+			"size", size,
 		).Info("Completed DB backup")
 		return err
 	})

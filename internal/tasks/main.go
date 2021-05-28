@@ -3,8 +3,8 @@ package tasks
 import (
 	"time"
 
-	"github.com/grumblechat/server/internal/config"
-	"github.com/grumblechat/server/internal/logging"
+	"github.com/deltabyte/grumble-server/internal/config"
+	"github.com/deltabyte/grumble-server/internal/logging"
 	"go.uber.org/zap"
 
 	"github.com/go-co-op/gocron"
@@ -13,17 +13,21 @@ import (
 
 type TaskContext struct {
 	cfg *config.Config
-	db *bolt.DB
+	db  *bolt.DB
 	log *zap.SugaredLogger
 }
 
 func Run(db *bolt.DB, cfg *config.Config) {
 	log := logging.Task()
-	ctx := TaskContext{ cfg, db, log }
+	defer log.Sync()
+
+	// setup scheduler
+	ctx := TaskContext{cfg, db, log}
 	scheduler := gocron.NewScheduler(time.Local)
 
 	// backups
-	bkuCtx := ctx; bkuCtx.log = log.Named("backup")
+	bkuCtx := ctx
+	bkuCtx.log = log.Named("backup")
 	scheduler.Every(cfg.Backup.Schedule).Do(BackupDatabase, bkuCtx)
 
 	// start scheduler
