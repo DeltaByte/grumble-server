@@ -1,18 +1,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
 	"time"
 
-	"github.com/grumblechat/server/internal/config"
-	channelsController "github.com/grumblechat/server/internal/controllers/channels"
-	messagesController "github.com/grumblechat/server/internal/controllers/messages"
-	"github.com/grumblechat/server/internal/database"
-	"github.com/grumblechat/server/internal/logging"
-	"github.com/grumblechat/server/internal/middleware"
-	"github.com/grumblechat/server/internal/tasks"
-	"github.com/grumblechat/server/internal/validation"
+	"github.com/deltabyte/grumble-server/internal/config"
+	channelsController "github.com/deltabyte/grumble-server/internal/controllers/channels"
+	messagesController "github.com/deltabyte/grumble-server/internal/controllers/messages"
+	"github.com/deltabyte/grumble-server/internal/database"
+	"github.com/deltabyte/grumble-server/internal/logging"
+	"github.com/deltabyte/grumble-server/internal/middleware"
+	"github.com/deltabyte/grumble-server/internal/tasks"
+	"github.com/deltabyte/grumble-server/internal/validation"
 
 	"github.com/getsentry/sentry-go"
 	sentryEcho "github.com/getsentry/sentry-go/echo"
@@ -26,7 +30,7 @@ func main() {
 	// load config
 	cfg := config.Load()
 
-	if (cfg.Banner) {
+	if cfg.Banner {
 		printBanner()
 	}
 
@@ -40,6 +44,7 @@ func main() {
 	logging.Init()
 	log := logging.Default()
 	db := database.Init(cfg.Paths.Database)
+	defer log.Sync()
 	defer db.Close()
 
 	// init framework
@@ -70,6 +75,22 @@ func main() {
 	tasks.Run(db, cfg)
 
 	// start server
-	tasks.StartAsync()
-	app.Start(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port))
+	go func() {
+		host := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+		log.With("address", host).Info("starting HTTP server")
+		if err := app.Start(host); err != nil && err != http.ErrServerClosed {
+			log.Fatal("shutting down the server")
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds. 
+	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := app.Shutdown(ctx); err != nil {
+		log.Fatal(err)
+	}
 }
