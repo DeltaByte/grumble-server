@@ -1,4 +1,4 @@
-.PHONY: install build build-docker start help
+.PHONY: install build build-docker test test-full start help
 
 GO = GO111MODULE=on go
 
@@ -7,6 +7,9 @@ GO = GO111MODULE=on go
 install: ## Install dependencies.
 	$(GO) run build.go setup
 
+
+##@ Build
+
 build: ## Build Go binaries.
 	@echo "build go files"
 	$(GO) run scripts/build.go build
@@ -14,6 +17,16 @@ build: ## Build Go binaries.
 build-docker: ## Build Docker image for development.
 	@echo "build docker container"
 	docker build --tag grumblechat/server:dev -f build/docker/Dockerfile .
+
+##@ Testing
+
+test: ## short test-suite
+	@echo "running minimal tests"
+	$(GO) test --short ./...
+
+test-full: ## full test-suite
+	@echo "running all tests"
+	$(GO) test -v ./...
 
 ##@ Helpers
 

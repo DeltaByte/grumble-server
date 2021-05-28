@@ -37,6 +37,21 @@ func (msg *Message) Decode(enc []byte) error {
 	return err
 }
 
+// put the message into a specific DB bucket
+func (msg *Message) bktSave(bkt *bolt.Bucket) error {
+		// byte-encode the channel
+		enc, err := msg.Encode()
+		if err != nil {
+			return err
+		}
+
+		// persist the channel
+		err = bkt.Put(msg.ID.Bytes(), enc)
+
+		return err
+}
+
+// persist the message to the DB
 func (msg *Message) Save(db *bolt.DB) error {
 	// update timestamps
 	now := time.Now()
@@ -45,17 +60,8 @@ func (msg *Message) Save(db *bolt.DB) error {
 
 	// persist to DB
 	return db.Update(func(tx *bolt.Tx) error {
-		// byte-encode the channel
-		enc, err := msg.Encode()
-		if err != nil {
-			return err
-		}
-
-		// persist the channel
-		dbb := channelBucket(tx, msg.ChannelID)
-		err = dbb.Put(msg.ID.Bytes(), enc)
-
-		return err
+		bkt := channelBucket(tx, msg.ChannelID)
+		return msg.bktSave(bkt)
 	})
 }
 

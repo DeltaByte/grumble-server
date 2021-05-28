@@ -1,8 +1,9 @@
-module github.com/grumblechat/server
+module github.com/deltabyte/grumble-server
 
 go 1.16
 
 require (
+	github.com/dustin/go-humanize v1.0.0
 	github.com/getsentry/sentry-go v0.10.0
 	github.com/go-co-op/gocron v1.5.0
 	github.com/go-playground/validator/v10 v10.6.1
