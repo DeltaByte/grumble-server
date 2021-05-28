@@ -54,7 +54,7 @@ func Load() *Config {
 	config.Sentry.DSN = sentryDSN
 
 	// parse env vars and load config file
-	configPath := flag.String("config-file", "config.json", "Configuration file location")
+	configPath := flag.String("config-file", "config.toml", "Configuration file location")
 	flag.Parse()
 
 	// parse config
