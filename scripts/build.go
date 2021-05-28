@@ -42,16 +42,16 @@ var (
 	linuxPackageIteration string = ""
 	race                  bool
 	workingDir            string
-	includeBuildId        bool     = true
-	buildId               string   = "0"
-	serverBinary          string   = "grumble-server"
+	includeBuildId        bool   = true
+	buildId               string = "0"
+	serverBinary          string = "grumble-server"
 	// cliBinary             string   = "grumble-cli"
 	// binaries              []string = []string{serverBinary, cliBinary}
-	binaries              []string = []string{serverBinary}
-	isDev                 bool     = false
-	skipRpmGen            bool     = false
-	skipDebGen            bool     = false
-	printGenVersion       bool     = false
+	binaries        []string = []string{serverBinary}
+	isDev           bool     = false
+	skipRpmGen      bool     = false
+	skipDebGen      bool     = false
+	printGenVersion bool     = false
 )
 
 func main() {
@@ -301,7 +301,7 @@ func clean() {
 
 	rmr("dist")
 	rmr("tmp")
-	rmr(filepath.Join(build.Default.GOPATH, fmt.Sprintf("pkg/%s_%s/github.com/grumblechat", goos, goarch)))
+	rmr(filepath.Join(build.Default.GOPATH, fmt.Sprintf("pkg/%s_%s/github.com/deltabyte", goos, goarch)))
 }
 
 func setBuildEnv() {
