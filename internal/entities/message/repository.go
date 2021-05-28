@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/deltabyte/grumble-server/internal/pagination"
+	"github.com/grumblechat/server/internal/pagination"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"

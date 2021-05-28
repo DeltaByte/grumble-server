@@ -3,7 +3,7 @@ FROM golang:1.16-alpine3.13 as builder
 
 RUN apk add --no-cache gcc g++
 
-WORKDIR $GOPATH/src/github.com/deltabyte/grumble-server
+WORKDIR $GOPATH/src/github.com/grumblechat/server
 
 COPY go.mod go.sum ./
 
@@ -69,8 +69,8 @@ COPY ./build/docker/run.sh /run.sh
 RUN chmod +x /run.sh
 
 # copy binaries from build stage
-COPY --from=builder /go/src/github.com/deltabyte/grumble-server/bin/*/grumble-server ./bin/
-#COPY --from=builder /go/src/github.com/deltabyte/grumble-server/bin/*/grumble-cli ./bin/
+COPY --from=builder /go/src/github.com/grumblechat/server/bin/*/grumble-server ./bin/
+#COPY --from=builder /go/src/github.com/grumblechat/server/bin/*/grumble-cli ./bin/
 
 # expose ports
 EXPOSE 80

@@ -3,8 +3,8 @@ package tasks
 import (
 	"time"
 
-	"github.com/deltabyte/grumble-server/internal/config"
-	"github.com/deltabyte/grumble-server/internal/logging"
+	"github.com/grumblechat/server/internal/config"
+	"github.com/grumblechat/server/internal/logging"
 	"go.uber.org/zap"
 
 	"github.com/go-co-op/gocron"

@@ -9,14 +9,14 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/deltabyte/grumble-server/internal/config"
-	channelsController "github.com/deltabyte/grumble-server/internal/controllers/channels"
-	messagesController "github.com/deltabyte/grumble-server/internal/controllers/messages"
-	"github.com/deltabyte/grumble-server/internal/database"
-	"github.com/deltabyte/grumble-server/internal/logging"
-	"github.com/deltabyte/grumble-server/internal/middleware"
-	"github.com/deltabyte/grumble-server/internal/tasks"
-	"github.com/deltabyte/grumble-server/internal/validation"
+	"github.com/grumblechat/server/internal/config"
+	channelsController "github.com/grumblechat/server/internal/controllers/channels"
+	messagesController "github.com/grumblechat/server/internal/controllers/messages"
+	"github.com/grumblechat/server/internal/database"
+	"github.com/grumblechat/server/internal/logging"
+	"github.com/grumblechat/server/internal/middleware"
+	"github.com/grumblechat/server/internal/tasks"
+	"github.com/grumblechat/server/internal/validation"
 
 	"github.com/getsentry/sentry-go"
 	sentryEcho "github.com/getsentry/sentry-go/echo"
@@ -83,7 +83,7 @@ func main() {
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds. 
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
 	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)

@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"time"
 
-	"github.com/deltabyte/grumble-server/internal/helpers"
+	"github.com/grumblechat/server/internal/helpers"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
@@ -39,16 +39,16 @@ func (msg *Message) Decode(enc []byte) error {
 
 // put the message into a specific DB bucket
 func (msg *Message) bktSave(bkt *bolt.Bucket) error {
-		// byte-encode the channel
-		enc, err := msg.Encode()
-		if err != nil {
-			return err
-		}
-
-		// persist the channel
-		err = bkt.Put(msg.ID.Bytes(), enc)
-
+	// byte-encode the channel
+	enc, err := msg.Encode()
+	if err != nil {
 		return err
+	}
+
+	// persist the channel
+	err = bkt.Put(msg.ID.Bytes(), enc)
+
+	return err
 }
 
 // persist the message to the DB

@@ -3,7 +3,7 @@ package channelsController
 import (
 	"net/http"
 
-	"github.com/deltabyte/grumble-server/internal/entities/channel"
+	"github.com/grumblechat/server/internal/entities/channel"
 
 	"github.com/labstack/echo/v4"
 	bolt "go.etcd.io/bbolt"

@@ -3,7 +3,7 @@ package message
 import (
 	"time"
 
-	"github.com/deltabyte/grumble-server/internal/helpers"
+	"github.com/grumblechat/server/internal/helpers"
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
 )
@@ -12,9 +12,9 @@ const BoltBucketName = "messages"
 
 func New(channelID ksuid.KSUID) *Message {
 	return &Message{
-		ID: ksuid.New(),
+		ID:        ksuid.New(),
 		ChannelID: channelID,
-		TTL:  0,
+		TTL:       0,
 	}
 }
 
@@ -30,7 +30,6 @@ func channelBucket(tx *bolt.Tx, channelID ksuid.KSUID) *bolt.Bucket {
 	return msgBucket.Bucket(channelID.Bytes())
 }
 
-
 func BatchSave(db *bolt.DB, messages []*Message) error {
 	return db.Batch(func(tx *bolt.Tx) error {
 		now := time.Now()
@@ -44,7 +43,7 @@ func BatchSave(db *bolt.DB, messages []*Message) error {
 
 			// get channel-specific bucket
 			bkt, ok := buckets[msg.ChannelID]
-			if (!ok) {
+			if !ok {
 				bkt = channelBucket(tx, msg.ChannelID)
 				buckets[msg.ChannelID] = bkt
 			}

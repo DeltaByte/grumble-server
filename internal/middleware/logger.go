@@ -3,8 +3,8 @@ package middleware
 import (
 	"time"
 
-	"github.com/deltabyte/grumble-server/internal/config"
-	"github.com/deltabyte/grumble-server/internal/logging"
+	"github.com/grumblechat/server/internal/config"
+	"github.com/grumblechat/server/internal/logging"
 
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"

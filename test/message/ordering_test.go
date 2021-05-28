@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/deltabyte/grumble-server/internal/database"
-	"github.com/deltabyte/grumble-server/internal/entities/channel"
-	"github.com/deltabyte/grumble-server/internal/entities/message"
+	"github.com/grumblechat/server/internal/database"
+	"github.com/grumblechat/server/internal/entities/channel"
+	"github.com/grumblechat/server/internal/entities/message"
 )
 
 func TestMessageOrdering(t *testing.T) {
@@ -42,7 +42,7 @@ func TestMessageOrdering(t *testing.T) {
 	var msgs []*message.Message
 
 	// batch message generation into chunks
-	chunks := iter/chunkSize
+	chunks := iter / chunkSize
 	waitGroup.Add(chunks)
 	for chunk := 0; chunk < chunks; chunk++ {
 		go func() {
@@ -50,7 +50,7 @@ func TestMessageOrdering(t *testing.T) {
 			var msgChunk []*message.Message
 
 			// generate batch of 100 messages
-			for i := 0; i < chunkSize; i++ { 
+			for i := 0; i < chunkSize; i++ {
 				msg := message.New(chn.ID)
 				msg.Body = "Lorem Ipsum"
 				msg.CreatedAt = time.Now()
@@ -125,7 +125,7 @@ func TestMessageOrdering(t *testing.T) {
 
 	// check results
 	delta := (float64(correct) * float64(100)) / float64(iter)
-	if (correct != iter) {
+	if correct != iter {
 		t.Errorf("Correct: %d, Incorrect %d, Delta: %.3f%%, ", correct, (iter - correct), delta)
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/deltabyte/grumble-server/internal/config"
+	"github.com/grumblechat/server/internal/config"
 
 	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"

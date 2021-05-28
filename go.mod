@@ -1,4 +1,4 @@
-module github.com/deltabyte/grumble-server
+module github.com/grumblechat/server
 
 go 1.16
 
