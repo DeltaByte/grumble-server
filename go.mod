@@ -3,11 +3,9 @@ module github.com/deltabyte/grumble-server
 go 1.16
 
 require (
-	github.com/dustin/go-humanize v1.0.0
-	github.com/getsentry/sentry-go v0.10.0
+	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-co-op/gocron v1.5.0
 	github.com/go-playground/validator/v10 v10.6.1
-	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/jinzhu/configor v1.2.1
 	github.com/jinzhu/copier v0.3.0
 	github.com/kr/text v0.2.0 // indirect
