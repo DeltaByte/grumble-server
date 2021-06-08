@@ -6,7 +6,7 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/grumblechat/server/pkg";
+option go_package = "github.com/grumblechat/server/gen/go/channel;channel";
 
 service ChannelService {
   // lists channels.

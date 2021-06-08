@@ -7,7 +7,7 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 
-option go_package = "github.com/grumblechat/server/pkg";
+option go_package = "github.com/grumblechat/server/gen/go/message;message";
 
 service MessageService {
   // lists messages for a channel.
