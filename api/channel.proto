@@ -1,0 +1,100 @@
+syntax = "proto3";
+package grumblechat.server.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/grumblechat/server/pkg";
+
+service ChannelService {
+  // lists channels.
+  rpc ListChannels (ListChannelsRequest) returns (ListChannelsResponse) {
+    option (google.api.http) = {
+      get: "/channels"
+    };
+  }
+
+  // creates a new message and returns it.
+  rpc CreateChannel (CreateChannelRequest) returns (Channel) {
+    option (google.api.http) = {
+      post: "/channels"
+      body: "channel"
+    };
+    //option (google.api.method_signature) = "channel";
+  };
+
+  // updates a channel. Returns INVALID_ARGUMENT if the ID is unknown.
+  rpc UpdateChannel (UpdateChannelRequest) returns (Channel) {
+    option (google.api.http) = {
+      patch: "/channels/{id}"
+      body: "*"
+    };
+  }
+
+  // deletes a channel.
+  rpc DeleteChannel (DeleteChannelRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/channels/{id}"
+    };
+  }
+}
+
+/**
+ * Channel object
+ */
+ enum ChannelType {
+  CHANNEL_TYPE_UNSPECIFIED = 0;
+  CHANNEL_TYPE_VOICE       = 1;
+  CHANNEL_TYPE_TEXT        = 2;
+}
+
+message Channel {
+  string      id      = 1;
+  string      name    = 2;
+  bool        nsfw    = 3;
+  string      topic   = 4;
+  uint32      bitrate = 5;
+  ChannelType type    = 6;
+
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+/**
+ * List Channels.
+ */
+message ListChannelsRequest {}
+message ListChannelsResponse {
+  repeated Channel channels = 1;
+}
+
+/**
+ * Create Channel
+ */
+message CreateChannelRequest {
+  string      name    = 1;
+  bool        nsfw    = 2;
+  string      topic   = 3;
+  uint32      bitrate = 4;
+  ChannelType type    = 5;
+}
+
+/**
+ * Update Channel
+ */
+message UpdateChannelRequest {
+  string id      = 1 [(google.api.field_behavior) = REQUIRED];
+  string name    = 2;
+  bool   nsfw    = 3;
+  string topic   = 4;
+  uint32 bitrate = 5;
+}
+
+/**
+ * Delete Channel
+ */
+message DeleteChannelRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
