@@ -7,6 +7,7 @@ require (
 	github.com/go-co-op/gocron v1.6.0
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/google/go-cmp v0.5.6
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.4.0 // indirect
 	github.com/jinzhu/configor v1.2.1
 	github.com/jinzhu/copier v0.3.0
 	github.com/kr/text v0.2.0 // indirect

@@ -1,44 +1,71 @@
 package channel
 
 import (
-	"bytes"
-	"encoding/gob"
-	"errors"
+	"time"
 
+	// internal
+	pb "github.com/grumblechat/server/gen/go/channel"
+	"github.com/grumblechat/server/internal/helpers"
+
+	// external
+	"github.com/segmentio/ksuid"
 	bolt "go.etcd.io/bbolt"
+	"google.golang.org/protobuf/proto"
 )
 
-type Channel interface {
-	GetType() string
-	Encode() ([]byte, error)
-	Decode([]byte) error
-	Save(*bolt.DB) error
-	Delete(*bolt.DB) error
+func Decode(encoded []byte) (*pb.Channel, error) {
+	channel := &pb.Channel{}
+	if err := proto.Unmarshal(encoded, channel); err != nil {
+		return nil, err
+	}
+	return channel, nil
 }
 
-func Decode(encoded []byte) (Channel, error) {
-	// extract type
-	type baseChannelType struct { Type string }
-	baseChannel := &baseChannelType{}
-	buf := bytes.NewBuffer(encoded)
-	dec := gob.NewDecoder(buf)
-	err := dec.Decode(baseChannel)
-	if err != nil { return nil, err }
-
-	// decode VoiceChannel
-	if (baseChannel.Type == "voice") {
-		vc := &VoiceChannel{}
-		vc.Decode(encoded)
-		return vc, nil
+func New(chanType pb.ChannelType) *pb.Channel {
+	chn := &pb.Channel{
+		Id: ksuid.New().String(),
 	}
 
-	// decode TextChannel
-	if (baseChannel.Type == "text") {
-		tc := &TextChannel{}
-		tc.Decode(encoded)
-		return tc, nil
+	// voice specific defaults
+	if chanType == pb.ChannelType_CHANNEL_TYPE_VOICE {
+		chn.Bitrate = 64
 	}
 
-	// handle unknown types
-	return nil, errors.New("unknown channel type")
+	return chn
+}
+
+func Save(db *bolt.DB, chn *pb.Channel) error {
+	// update timestamps
+	now := time.Now()
+	helpers.TouchTimestamp(chn.CreatedAt, now, true)
+	helpers.TouchTimestamp(chn.UpdatedAt, now, false)
+
+	// encode to binary
+	enc, err := proto.Marshal(chn)
+	if err != nil {
+		return err
+	}
+
+	// get ID
+	id, err := helpers.ParseKSUIDBytes(chn.Id)
+	if err != nil {
+		return err
+	}
+
+	// persist to DB
+	return db.Update(func(tx *bolt.Tx) error {
+		// persist the channel
+		bkt := tx.Bucket([]byte("channels"))
+		err = bkt.Put(id, enc)
+		if err != nil {
+			return err
+		}
+
+		// create a bucket for messages
+		msgBkt := tx.Bucket([]byte("messages"))
+		_, err = msgBkt.CreateBucketIfNotExists(id)
+
+		// assumed that err is either an error or nil by this point
+		return err
+	})
 }

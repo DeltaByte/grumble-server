@@ -74,7 +74,7 @@ func (c *channelServiceClient) DeleteChannel(ctx context.Context, in *DeleteChan
 }
 
 // ChannelServiceServer is the server API for ChannelService service.
-// All implementations must embed UnimplementedChannelServiceServer
+// All implementations should embed UnimplementedChannelServiceServer
 // for forward compatibility
 type ChannelServiceServer interface {
 	// lists channels.
@@ -85,10 +85,9 @@ type ChannelServiceServer interface {
 	UpdateChannel(context.Context, *UpdateChannelRequest) (*Channel, error)
 	// deletes a channel.
 	DeleteChannel(context.Context, *DeleteChannelRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedChannelServiceServer()
 }
 
-// UnimplementedChannelServiceServer must be embedded to have forward compatible implementations.
+// UnimplementedChannelServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedChannelServiceServer struct {
 }
 
@@ -104,7 +103,6 @@ func (UnimplementedChannelServiceServer) UpdateChannel(context.Context, *UpdateC
 func (UnimplementedChannelServiceServer) DeleteChannel(context.Context, *DeleteChannelRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteChannel not implemented")
 }
-func (UnimplementedChannelServiceServer) mustEmbedUnimplementedChannelServiceServer() {}
 
 // UnsafeChannelServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to ChannelServiceServer will

@@ -5,6 +5,7 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "google/rpc/status.proto";
 
 option go_package = "github.com/grumblechat/server/gen/go/channel;channel";
 
@@ -20,7 +21,7 @@ service ChannelService {
   rpc CreateChannel (CreateChannelRequest) returns (Channel) {
     option (google.api.http) = {
       post: "/channels"
-      body: "channel"
+      body: "*"
     };
     //option (google.api.method_signature) = "channel";
   };
@@ -79,6 +80,10 @@ message CreateChannelRequest {
   string      topic   = 3;
   uint32      bitrate = 4;
   ChannelType type    = 5;
+}
+message CreateChannelResponse {
+  Channel           channel = 1;
+  google.rpc.Status status  = 2;
 }
 
 /**

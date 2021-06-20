@@ -73,7 +73,7 @@ func (c *messageServiceClient) DeleteMessage(ctx context.Context, in *DeleteMess
 }
 
 // MessageServiceServer is the server API for MessageService service.
-// All implementations must embed UnimplementedMessageServiceServer
+// All implementations should embed UnimplementedMessageServiceServer
 // for forward compatibility
 type MessageServiceServer interface {
 	// lists messages for a channel.
@@ -83,10 +83,9 @@ type MessageServiceServer interface {
 	// update a message and return it
 	UpdateMessage(context.Context, *UpdateMessageRequest) (*Message, error)
 	DeleteMessage(context.Context, *DeleteMessageRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedMessageServiceServer()
 }
 
-// UnimplementedMessageServiceServer must be embedded to have forward compatible implementations.
+// UnimplementedMessageServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedMessageServiceServer struct {
 }
 
@@ -102,7 +101,6 @@ func (UnimplementedMessageServiceServer) UpdateMessage(context.Context, *UpdateM
 func (UnimplementedMessageServiceServer) DeleteMessage(context.Context, *DeleteMessageRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessage not implemented")
 }
-func (UnimplementedMessageServiceServer) mustEmbedUnimplementedMessageServiceServer() {}
 
 // UnsafeMessageServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to MessageServiceServer will
