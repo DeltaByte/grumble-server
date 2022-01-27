@@ -1,0 +1,19 @@
+version: v1beta1
+name: buf.build/grumblechat/server
+
+lint:
+  use: [DEFAULT]
+  except:
+    - PACKAGE_DIRECTORY_MATCH
+    - RPC_REQUEST_RESPONSE_UNIQUE
+    - RPC_RESPONSE_STANDARD_NAME
+
+breaking:
+  use: [FILE]
+
+deps:
+  - buf.build/beta/googleapis
+
+build:
+  roots:
+    - api/proto

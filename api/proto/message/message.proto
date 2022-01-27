@@ -1,0 +1,107 @@
+syntax = "proto3";
+package grumblechat.server.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "github.com/grumblechat/server/gen/go/message;message";
+
+service MessageService {
+  // lists messages for a channel.
+  rpc ListMessages (ListMessagesRequest) returns (ListMessagesResponse) {
+    option (google.api.http) = {
+      get: "/channels/{channel_id}/messages"
+    };
+  }
+
+  // create a message and return it
+  rpc CreateMessage (CreateMessageRequest) returns (Message) {
+    option (google.api.http) = {
+      post: "/channels/{channel_id}/messages"
+    };
+  }
+
+  // update a message and return it
+  rpc UpdateMessage (UpdateMessageRequest) returns (Message) {
+    option (google.api.http) = {
+      patch: "/channels/{channel_id}/messages/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteMessage (DeleteMessageRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/channels/{channel_id}/messages/{id}"
+    };
+  }
+}
+
+/**
+ * Message object
+ */
+message Message {
+  string id         = 1;
+  string channel_id = 2;
+  string body       = 3;
+  uint32 ttl        = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+/**
+ * List Messages
+ */
+message ListMessagesRequest {
+  string channel_id  = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Requested page size. Server may return fewer messages than requested.
+  // If unspecified, server will pick an appropriate default.
+  uint32 page_size   = 2;
+
+  
+  // A token identifying a page of results the server should return.
+  // Typically, this is the value of [ListMessagesResponse.next_page_token]
+  // returned from the previous call to `ListMessages` method.
+  string page_token = 3;
+}
+
+message ListMessagesResponse {
+  // list of Messages
+  repeated Message messages = 1;
+
+  // A token to retrieve next page of results.
+  // Pass this value in the [ListMessagesRequest.page_token]
+  // field in the subsequent call to `ListMessages` method to retrieve the next
+  // page of results.
+  string next_page_token = 2;
+}
+
+/**
+ * Create Message
+ */
+message CreateMessageRequest {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string body       = 2 [(google.api.field_behavior) = REQUIRED];
+  uint32 ttl        = 3;
+}
+
+/**
+ * Update Message
+ */
+message UpdateMessageRequest {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string id         = 2 [(google.api.field_behavior) = REQUIRED];
+  string body       = 3;
+  uint32 ttl        = 4;
+}
+
+/**
+ * Delete Message
+ */
+ message DeleteMessageRequest {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string id         = 2 [(google.api.field_behavior) = REQUIRED];
+}
